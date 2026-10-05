@@ -1,0 +1,1 @@
+ALTER TABLE public.reviews ADD CONSTRAINT reviews_body_not_empty CHECK (char_length(btrim(body)) > 0);

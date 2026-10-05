@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Search, ShieldCheck, Star, Users } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowRight, CheckCircle2, Search, ShieldCheck, Star, Users } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 import { Button } from "@/components/ui/button";
 
@@ -44,6 +46,12 @@ const features = [
 ];
 
 function LandingPage() {
+  const [signedIn, setSignedIn] = useState(false);
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setSignedIn(!!data.user));
+    const { data } = supabase.auth.onAuthStateChange((_e, s) => setSignedIn(!!s?.user));
+    return () => data.subscription.unsubscribe();
+  }, []);
   return (
     <div className="min-h-screen">
       {/* Hero */}
@@ -68,9 +76,16 @@ function LandingPage() {
                   <ArrowRight className="size-4" />
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link to="/auth">Sign in</Link>
-              </Button>
+              {signedIn ? (
+                <Button size="lg" variant="outline" disabled className="disabled:opacity-100">
+                  <CheckCircle2 className="size-4 text-success" />
+                  Signed in
+                </Button>
+              ) : (
+                <Button size="lg" variant="outline" asChild>
+                  <Link to="/auth">Sign in</Link>
+                </Button>
+              )}
             </div>
           </div>
 

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StarRating } from "@/components/StarRating";
+import { ReviewForm } from "@/components/ReviewForm";
 
 export const Route = createFileRoute("/profile/$id")({
   head: () => ({
@@ -143,6 +144,25 @@ function ProfilePage() {
           </div>
         </CardContent>
       </Card>
+
+      {myId && myId !== profile.id && !reviewsQ.isLoading && (
+        <ReviewForm
+          profileId={profile.id}
+          reviewerId={myId}
+          existing={(() => {
+            const mine = reviews.find((r) => r.reviewer?.id === myId);
+            return mine ? { id: mine.id, rating: mine.rating, body: mine.body } : null;
+          })()}
+        />
+      )}
+      {!myId && (
+        <Card>
+          <CardContent className="flex items-center justify-between gap-3 pt-6">
+            <p className="text-sm text-muted-foreground">Worked with this person?</p>
+            <Button asChild size="sm"><Link to="/auth">Sign in to write a review</Link></Button>
+          </CardContent>
+        </Card>
+      )}
 
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">Reviews</h2>

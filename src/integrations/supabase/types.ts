@@ -22,6 +22,7 @@ export type Database = {
           full_name: string
           headline: string
           id: string
+          location: string
           updated_at: string
         }
         Insert: {
@@ -31,6 +32,7 @@ export type Database = {
           full_name?: string
           headline?: string
           id: string
+          location?: string
           updated_at?: string
         }
         Update: {
@@ -40,9 +42,52 @@ export type Database = {
           full_name?: string
           headline?: string
           id?: string
+          location?: string
           updated_at?: string
         }
         Relationships: []
+      }
+      reviews: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          profile_id: string
+          rating: number
+          reviewer_id: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          id?: string
+          profile_id: string
+          rating: number
+          reviewer_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          profile_id?: string
+          rating?: number
+          reviewer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

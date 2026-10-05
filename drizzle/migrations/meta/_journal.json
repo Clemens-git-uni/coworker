@@ -8,6 +8,13 @@
       "when": 1791188714000,
       "tag": "0000_create_profiles",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791189510464,
+      "tag": "0001_profile_location_and_reviews",
+      "breakpoints": true
     }
   ]
 }

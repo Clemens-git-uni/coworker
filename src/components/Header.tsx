@@ -48,10 +48,11 @@ export function Header() {
     navigate({ to: "/", replace: true });
   }
 
+  const metadata = user?.user_metadata ?? {};
   const displayName =
-    (user?.user_metadata?.full_name as string | undefined) ??
-    (user?.user_metadata?.name as string | undefined);
-  const avatarUrl = user?.user_metadata?.avatar_url as string | undefined;
+    (metadata["full_name"] as string | undefined) ??
+    (metadata["name"] as string | undefined);
+  const avatarUrl = metadata["avatar_url"] as string | undefined;
 
   return (
     <header className="sticky top-0 z-50 border-b bg-card/95 backdrop-blur">

@@ -66,7 +66,7 @@ export function ReviewForm({
     setBusy(true);
     const { error } = await supabase.from("reviews").delete().eq("id", existing.id);
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Review deleted");
     await refresh();
   }

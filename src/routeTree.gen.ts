@@ -12,7 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as GuidelinesRouteImport } from './routes/guidelines'
 import { Route as SearchRouteImport } from './routes/search'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ProfileIdRouteImport } from './routes/profile.$id'
 import { Route as AuthenticatedProfileEditRouteImport } from './routes/_authenticated/profile.edit'
 
@@ -30,9 +32,19 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GuidelinesRoute = GuidelinesRouteImport.update({
+  id: '/guidelines',
+  path: '/guidelines',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileIdRoute = ProfileIdRouteImport.update({
@@ -50,14 +62,18 @@ const AuthenticatedProfileEditRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/guidelines': typeof GuidelinesRoute
   '/search': typeof SearchRoute
+  '/terms': typeof TermsRoute
   '/profile/$id': typeof ProfileIdRoute
   '/profile/edit': typeof AuthenticatedProfileEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/guidelines': typeof GuidelinesRoute
   '/search': typeof SearchRoute
+  '/terms': typeof TermsRoute
   '/profile/$id': typeof ProfileIdRoute
   '/profile/edit': typeof AuthenticatedProfileEditRoute
 }
@@ -66,21 +82,39 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/guidelines': typeof GuidelinesRoute
   '/search': typeof SearchRoute
+  '/terms': typeof TermsRoute
   '/profile/$id': typeof ProfileIdRoute
   '/_authenticated/profile/edit': typeof AuthenticatedProfileEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/search' | '/profile/$id' | '/profile/edit'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/guidelines'
+    | '/search'
+    | '/terms'
+    | '/profile/$id'
+    | '/profile/edit'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/search' | '/profile/$id' | '/profile/edit'
+  to:
+    | '/'
+    | '/auth'
+    | '/guidelines'
+    | '/search'
+    | '/terms'
+    | '/profile/$id'
+    | '/profile/edit'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/guidelines'
     | '/search'
+    | '/terms'
     | '/profile/$id'
     | '/_authenticated/profile/edit'
   fileRoutesById: FileRoutesById
@@ -89,7 +123,9 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  GuidelinesRoute: typeof GuidelinesRoute
   SearchRoute: typeof SearchRoute
+  TermsRoute: typeof TermsRoute
   ProfileIdRoute: typeof ProfileIdRoute
 }
 
@@ -116,11 +152,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/guidelines': {
+      id: '/guidelines'
+      path: '/guidelines'
+      fullPath: '/guidelines'
+      preLoaderRoute: typeof GuidelinesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/search': {
       id: '/search'
       path: '/search'
       fullPath: '/search'
       preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile/$id': {
@@ -155,7 +205,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  GuidelinesRoute: GuidelinesRoute,
   SearchRoute: SearchRoute,
+  TermsRoute: TermsRoute,
   ProfileIdRoute: ProfileIdRoute,
 }
 export const routeTree = rootRouteImport

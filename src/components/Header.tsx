@@ -2,7 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
-import { LogOut, Pencil, Star, User as UserIcon } from "lucide-react";
+import { LogOut, Pencil, Search, Star, User as UserIcon } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -67,6 +67,12 @@ export function Header() {
         </Link>
 
         <nav className="flex items-center gap-2">
+          <Button variant="ghost" asChild>
+            <Link to="/search" activeProps={{ className: "text-primary" }}>
+              <Search className="size-4" />
+              <span className="hidden sm:inline">Find professionals</span>
+            </Link>
+          </Button>
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

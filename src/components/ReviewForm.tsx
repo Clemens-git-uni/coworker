@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { Star } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { containsAbuse } from "@/lib/moderation";
 
 const MAX = 250;
 
@@ -35,19 +38,42 @@ export function ReviewForm({
     setBody(existing?.body ?? "");
   }, [existing]);
 
+  const [accept, setAccept] = useState(false);
+  const { data: me } = useQuery({
+    queryKey: ["review-eligibility", reviewerId],
+    queryFn: async () => {
+      const [{ data: u }, { data: p }] = await Promise.all([
+        supabase.auth.getUser(),
+        supabase.from("profiles").select("guidelines_accepted_at").eq("id", reviewerId).maybeSingle(),
+      ]);
+      return { verified: !!u.user?.email_confirmed_at, accepted: !!p?.guidelines_accepted_at };
+    },
+  });
+  const emailVerified = me?.verified;
+  const needsGuidelines = !existing && me ? !me.accepted : false;
+
   const len = body.length;
+  const abusive = containsAbuse(body);
   const invalid = rating < 1 || body.trim().length === 0 || len > MAX;
   const counterColor =
     len >= MAX ? "text-destructive" : len >= 220 ? "text-warning" : "text-muted-foreground";
 
   async function refresh() {
     await qc.invalidateQueries({ queryKey: ["reviews", profileId] });
+    await qc.invalidateQueries({ queryKey: ["review-eligibility", reviewerId] });
   }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (invalid) return;
+    if (invalid || abusive) return;
     setBusy(true);
+    if (needsGuidelines) {
+      const { error: gErr } = await supabase
+        .from("profiles")
+        .update({ guidelines_accepted_at: new Date().toISOString() })
+        .eq("id", reviewerId);
+      if (gErr) { setBusy(false); toast.error(gErr.message); return; }
+    }
     const payload = { rating, body: body.trim() };
     const { error } = existing
       ? await supabase.from("reviews").update(payload).eq("id", existing.id)
@@ -82,6 +108,16 @@ export function ReviewForm({
               Delete
             </Button>
           </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!existing && emailVerified === false) {
+    return (
+      <Card>
+        <CardContent className="pt-6 text-sm text-muted-foreground">
+          Please verify your email address (check your inbox for the confirmation link) before writing reviews.
         </CardContent>
       </Card>
     );
@@ -123,13 +159,26 @@ export function ReviewForm({
               rows={4}
               aria-label="Review text"
             />
-            <p className={cn("text-right text-xs font-medium", counterColor)}>{len}/{MAX}</p>
+            <div className="flex justify-between gap-2">
+              <p className="text-xs text-destructive">{abusive ? "Please remove abusive language — see our Review Guidelines." : ""}</p>
+              <p className={cn("text-xs font-medium", counterColor)}>{len}/{MAX}</p>
+            </div>
           </div>
+          {needsGuidelines && (
+            <label className="flex items-start gap-2 text-sm">
+              <Checkbox checked={accept} onCheckedChange={(v) => setAccept(v === true)} className="mt-0.5" />
+              <span>
+                I confirm this review is based on real professional experience and follows the{" "}
+                <Link to="/guidelines" target="_blank" className="text-primary underline">Review Guidelines</Link>{" "}
+                and <Link to="/terms" target="_blank" className="text-primary underline">Terms of Use</Link>.
+              </span>
+            </label>
+          )}
           <div className="flex justify-end gap-2">
             {existing && (
               <Button type="button" variant="ghost" onClick={() => setEditing(false)}>Cancel</Button>
             )}
-            <Button type="submit" disabled={invalid || busy}>
+            <Button type="submit" disabled={invalid || busy || abusive || (needsGuidelines && !accept)}>
               {busy ? "Saving…" : existing ? "Save review" : "Post review"}
             </Button>
           </div>

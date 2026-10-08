@@ -20,6 +20,7 @@ export type Database = {
           company: string
           created_at: string
           full_name: string
+          guidelines_accepted_at: string | null
           headline: string
           id: string
           location: string
@@ -30,6 +31,7 @@ export type Database = {
           company?: string
           created_at?: string
           full_name?: string
+          guidelines_accepted_at?: string | null
           headline?: string
           id: string
           location?: string
@@ -40,12 +42,94 @@ export type Database = {
           company?: string
           created_at?: string
           full_name?: string
+          guidelines_accepted_at?: string | null
           headline?: string
           id?: string
           location?: string
           updated_at?: string
         }
         Relationships: []
+      }
+      reports: {
+        Row: {
+          created_at: string
+          details: string
+          id: string
+          reason: string
+          reporter_id: string
+          review_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          details?: string
+          id?: string
+          reason: string
+          reporter_id: string
+          review_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          details?: string
+          id?: string
+          reason?: string
+          reporter_id?: string
+          review_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      review_replies: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          review_id: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          review_id: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          review_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_replies_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_replies_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: true
+            referencedRelation: "reviews"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reviews: {
         Row: {
@@ -55,6 +139,7 @@ export type Database = {
           profile_id: string
           rating: number
           reviewer_id: string
+          status: string
         }
         Insert: {
           body?: string
@@ -63,6 +148,7 @@ export type Database = {
           profile_id: string
           rating: number
           reviewer_id: string
+          status?: string
         }
         Update: {
           body?: string
@@ -71,6 +157,7 @@ export type Database = {
           profile_id?: string
           rating?: number
           reviewer_id?: string
+          status?: string
         }
         Relationships: [
           {
@@ -89,11 +176,37 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      review_contains_abuse: { Args: { _text: string }; Returns: boolean }
       search_profiles: {
         Args: {
           _limit?: number
@@ -118,7 +231,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -245,6 +358,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const

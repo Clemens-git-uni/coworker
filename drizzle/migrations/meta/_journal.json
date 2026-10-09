@@ -50,6 +50,13 @@
       "when": 1791539006881,
       "tag": "0006_protect_profile_stats",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791539440933,
+      "tag": "0007_step1_profile_status_languages_review_slug",
+      "breakpoints": true
     }
   ]
 }

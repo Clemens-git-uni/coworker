@@ -191,6 +191,35 @@ export type Database = {
           },
         ]
       }
+      profile_languages: {
+        Row: {
+          created_at: string
+          language_code: string
+          proficiency: string
+          profile_id: string
+        }
+        Insert: {
+          created_at?: string
+          language_code: string
+          proficiency: string
+          profile_id: string
+        }
+        Update: {
+          created_at?: string
+          language_code?: string
+          proficiency?: string
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_languages_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -203,6 +232,10 @@ export type Database = {
           id: string
           location: string
           review_count: number
+          review_slug: string
+          status: string
+          status_note: string
+          status_return_date: string | null
           theme: string
           updated_at: string
         }
@@ -217,6 +250,10 @@ export type Database = {
           id: string
           location?: string
           review_count?: number
+          review_slug?: string
+          status?: string
+          status_note?: string
+          status_return_date?: string | null
           theme?: string
           updated_at?: string
         }
@@ -231,6 +268,10 @@ export type Database = {
           id?: string
           location?: string
           review_count?: number
+          review_slug?: string
+          status?: string
+          status_note?: string
+          status_return_date?: string | null
           theme?: string
           updated_at?: string
         }
@@ -406,6 +447,7 @@ export type Database = {
         }[]
       }
       refresh_profile_stats: { Args: { _pid: string }; Returns: undefined }
+      regenerate_review_slug: { Args: never; Returns: string }
       review_contains_abuse: { Args: { _text: string }; Returns: boolean }
       search_profiles: {
         Args: {

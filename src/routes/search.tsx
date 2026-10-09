@@ -1,36 +1,43 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { useEffect, useState } from "react";
-import { Building2, ChevronLeft, ChevronRight, MapPin, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, SlidersHorizontal, X } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
-import { StarRating } from "@/components/StarRating";
+import { ProfileCard } from "@/components/ProfileCard";
+import { MultiSelectFilter, type FilterOption } from "@/components/MultiSelectFilter";
 
 const PAGE_SIZE = 12;
+const REVIEW_PRESETS = [0, 1, 5, 10, 25, 50];
 
 const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
   location: fallback(z.string(), "").default(""),
   minRating: fallback(z.number(), 0).default(0),
+  minReviews: fallback(z.number().int(), 0).default(0),
+  positions: fallback(z.array(z.string().max(200)).max(30), []).default([]),
+  companies: fallback(z.array(z.string().max(200)).max(30), []).default([]),
   sort: fallback(z.string(), "rating").default("rating"),
   page: fallback(z.number().int(), 1).default(1),
 });
+type SearchParams = z.infer<typeof searchSchema>;
 
 export const Route = createFileRoute("/search")({
   validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [
       { title: "Find professionals — CoWorker" },
-      { name: "description", content: "Search professionals by name, company or job title, and filter by rating and location." },
+      { name: "description", content: "Search professionals by name, position, company, rating, review count and location." },
       { property: "og:title", content: "Find professionals — CoWorker" },
       { property: "og:description", content: "Search and compare rated professionals on CoWorker." },
       { property: "og:type", content: "website" },
@@ -40,29 +47,40 @@ export const Route = createFileRoute("/search")({
   component: SearchPage,
 });
 
-function initials(name: string) {
-  return (name.trim() || "?").split(/\s+/).map((p) => p[0]).slice(0, 2).join("").toUpperCase();
-}
-
 function SearchPage() {
   const s = Route.useSearch();
   const navigate = useNavigate({ from: "/search" });
   const sort = ["rating", "reviews", "newest"].includes(s.sort) ? s.sort : "rating";
   const minRating = Math.max(0, Math.min(5, s.minRating));
+  const minReviews = Math.max(0, s.minReviews);
   const page = Math.max(1, s.page);
 
   const [q, setQ] = useState(s.q);
   const [loc, setLoc] = useState(s.location);
   useEffect(() => { setQ(s.q); setLoc(s.location); }, [s.q, s.location]);
 
-  const { data, isLoading, isFetching } = useQuery({
-    queryKey: ["search", s.q, s.location, minRating, sort, page],
+  const optionsQ = useQuery({
+    queryKey: ["filter-options"],
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("profile_filter_options");
+      if (error) throw error;
+      const pick = (k: string): FilterOption[] => data.filter((d) => d.kind === k).map((d) => ({ value: d.value, count: Number(d.n) }));
+      return { positions: pick("headline"), companies: pick("company") };
+    },
+  });
+
+  const { data, isLoading, isFetching, isError, refetch } = useQuery({
+    queryKey: ["search", s.q, s.location, minRating, minReviews, s.positions, s.companies, sort, page],
     placeholderData: keepPreviousData,
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("search_profiles", {
+      const { data, error } = await supabase.rpc("search_profiles_v2", {
         _q: s.q.slice(0, 100),
         _location: s.location.slice(0, 100),
         _min_rating: minRating,
+        _headlines: s.positions,
+        _companies: s.companies,
+        _min_reviews: minReviews,
         _sort: sort,
         _limit: PAGE_SIZE,
         _offset: (page - 1) * PAGE_SIZE,
@@ -76,16 +94,56 @@ function SearchPage() {
   const total = Number(results[0]?.total_count ?? 0);
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
-  function update(patch: Partial<z.infer<typeof searchSchema>>) {
+  function update(patch: Partial<SearchParams>) {
     navigate({ search: (prev) => ({ ...prev, ...patch, page: patch.page ?? 1 }) });
   }
+
+  const chips: { label: string; remove: () => void }[] = [
+    ...(s.q ? [{ label: `“${s.q}”`, remove: () => update({ q: "" }) }] : []),
+    ...(s.location ? [{ label: `Location: ${s.location}`, remove: () => update({ location: "" }) }] : []),
+    ...(minRating ? [{ label: `${minRating}+ stars`, remove: () => update({ minRating: 0 }) }] : []),
+    ...(minReviews ? [{ label: `${minReviews}+ reviews`, remove: () => update({ minReviews: 0 }) }] : []),
+    ...s.positions.map((p) => ({ label: p, remove: () => update({ positions: s.positions.filter((x) => x !== p) }) })),
+    ...s.companies.map((c) => ({ label: c, remove: () => update({ companies: s.companies.filter((x) => x !== c) }) })),
+  ];
+  const clearAll = () => navigate({ search: { sort } as SearchParams });
+
+  const panel = (
+    <div className="space-y-6">
+      <MultiSelectFilter label="Position / expertise" options={optionsQ.data?.positions ?? []} loading={optionsQ.isLoading}
+        selected={s.positions} onChange={(positions) => update({ positions })} />
+      <MultiSelectFilter label="Company" options={optionsQ.data?.companies ?? []} loading={optionsQ.isLoading}
+        selected={s.companies} onChange={(companies) => update({ companies })} />
+      <fieldset className="space-y-2">
+        <legend className="text-sm font-semibold">Minimum reviews</legend>
+        <div className="flex flex-wrap gap-1.5">
+          {REVIEW_PRESETS.map((n) => (
+            <Button key={n} type="button" size="sm" variant={minReviews === n ? "default" : "outline"} aria-pressed={minReviews === n}
+              onClick={() => update({ minReviews: n })}>
+              {n === 0 ? "Any" : `${n}+`}
+            </Button>
+          ))}
+        </div>
+      </fieldset>
+      <fieldset className="space-y-2">
+        <legend className="text-sm font-semibold">Minimum rating</legend>
+        <Select value={String(minRating)} onValueChange={(v) => update({ minRating: Number(v) })}>
+          <SelectTrigger aria-label="Minimum rating"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="0">Any rating</SelectItem>
+            {[4, 3, 2, 1].map((n) => <SelectItem key={n} value={String(n)}>{n}+ stars</SelectItem>)}
+          </SelectContent>
+        </Select>
+      </fieldset>
+    </div>
+  );
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       <h1 className="text-2xl font-bold">Find professionals</h1>
 
       <form
-        className="mt-4 grid gap-3 rounded-xl border bg-card p-4 md:grid-cols-[2fr_1.3fr_1fr_1fr_auto] md:items-end"
+        className="mt-4 grid gap-3 rounded-xl border bg-card p-4 md:grid-cols-[2fr_1.3fr_1fr_auto] md:items-end"
         onSubmit={(e) => { e.preventDefault(); update({ q: q.trim(), location: loc.trim() }); }}
       >
         <div className="space-y-1.5">
@@ -100,19 +158,9 @@ function SearchPage() {
           <Input id="loc" value={loc} maxLength={100} onChange={(e) => setLoc(e.target.value)} placeholder="e.g. Vienna" />
         </div>
         <div className="space-y-1.5">
-          <Label>Minimum rating</Label>
-          <Select value={String(minRating)} onValueChange={(v) => update({ minRating: Number(v) })}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="0">Any rating</SelectItem>
-              {[4, 3, 2, 1].map((n) => <SelectItem key={n} value={String(n)}>{n}+ stars</SelectItem>)}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-1.5">
           <Label>Sort by</Label>
           <Select value={sort} onValueChange={(v) => update({ sort: v })}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger aria-label="Sort by"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="rating">Highest rated</SelectItem>
               <SelectItem value="reviews">Most reviewed</SelectItem>
@@ -123,55 +171,77 @@ function SearchPage() {
         <Button type="submit">Search</Button>
       </form>
 
-      <p className="mt-6 text-sm text-muted-foreground">
-        {isLoading ? "Searching…" : `${total} ${total === 1 ? "professional" : "professionals"} found`}
-      </p>
+      <div className="mt-6 grid gap-6 lg:grid-cols-[240px_1fr]">
+        <aside className="hidden lg:block" aria-label="Filters">
+          <div className="sticky top-20 rounded-xl border bg-card p-4">{panel}</div>
+        </aside>
 
-      <div className={`mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 ${isFetching && !isLoading ? "opacity-60" : ""}`}>
-        {isLoading
-          ? Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-36" />)
-          : results.map((p) => (
-              <Link key={p.id} to="/profile/$id" params={{ id: p.id }}>
-                <Card className="h-full transition-shadow hover:shadow-md">
-                  <CardContent className="flex gap-4 pt-6">
-                    <Avatar className="size-14">
-                      <AvatarImage src={p.avatar_url ?? undefined} alt={p.full_name} />
-                      <AvatarFallback className="bg-primary/10 font-semibold text-primary">{initials(p.full_name)}</AvatarFallback>
-                    </Avatar>
-                    <div className="min-w-0 flex-1 space-y-1">
-                      <p className="truncate font-semibold">{p.full_name || "Unnamed professional"}</p>
-                      {p.headline && <p className="line-clamp-2 text-sm text-foreground/80">{p.headline}</p>}
-                      <div className="flex flex-wrap gap-x-3 text-xs text-muted-foreground">
-                        {p.company && <span className="flex items-center gap-1"><Building2 className="size-3" />{p.company}</span>}
-                        {p.location && <span className="flex items-center gap-1"><MapPin className="size-3" />{p.location}</span>}
-                      </div>
-                      <div className="flex items-center gap-2 pt-1 text-sm">
-                        <StarRating value={Number(p.avg_rating)} />
-                        <span className="font-semibold">{Number(p.review_count) ? Number(p.avg_rating).toFixed(1) : "–"}</span>
-                        <span className="text-muted-foreground">({p.review_count} {Number(p.review_count) === 1 ? "review" : "reviews"})</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-      </div>
+        <div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="sm" className="lg:hidden">
+                  <SlidersHorizontal className="size-4" />Filters{chips.length ? ` (${chips.length})` : ""}
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="overflow-y-auto">
+                <SheetHeader><SheetTitle>Filters</SheetTitle></SheetHeader>
+                <div className="mt-4 px-1">{panel}</div>
+              </SheetContent>
+            </Sheet>
+            <p className="text-sm text-muted-foreground" aria-live="polite">
+              {isLoading ? "Searching…" : `${total} ${total === 1 ? "professional" : "professionals"} found`}
+            </p>
+          </div>
 
-      {!isLoading && total === 0 && (
-        <Card className="mt-3"><CardContent className="py-12 text-center text-muted-foreground">No professionals match your search.</CardContent></Card>
-      )}
+          {chips.length > 0 && (
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              {chips.map((c) => (
+                <Badge key={c.label} variant="secondary" className="gap-1 py-1 pl-2.5 pr-1">
+                  <span className="max-w-48 truncate">{c.label}</span>
+                  <button type="button" onClick={c.remove} aria-label={`Remove filter ${c.label}`} className="rounded-full p-0.5 hover:bg-background">
+                    <X className="size-3" />
+                  </button>
+                </Badge>
+              ))}
+              <Button variant="link" size="sm" className="h-auto p-0" onClick={clearAll}>Clear all</Button>
+            </div>
+          )}
 
-      {pages > 1 && (
-        <div className="mt-8 flex items-center justify-center gap-3">
-          <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => update({ page: page - 1 })}>
-            <ChevronLeft className="size-4" />Previous
-          </Button>
-          <span className="text-sm text-muted-foreground">Page {Math.min(page, pages)} of {pages}</span>
-          <Button variant="outline" size="sm" disabled={page >= pages} onClick={() => update({ page: page + 1 })}>
-            Next<ChevronRight className="size-4" />
-          </Button>
+          <div className={`mt-3 grid gap-4 sm:grid-cols-2 xl:grid-cols-3 ${isFetching && !isLoading ? "opacity-60" : ""}`}>
+            {isLoading
+              ? Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-36" />)
+              : results.map((p) => <ProfileCard key={p.id} p={p} />)}
+          </div>
+
+          {isError && (
+            <Card className="mt-3"><CardContent className="flex flex-col items-center gap-3 py-10 text-center">
+              <p className="text-destructive">Search failed to load.</p>
+              <Button variant="outline" size="sm" onClick={() => refetch()}>Try again</Button>
+            </CardContent></Card>
+          )}
+
+          {!isLoading && !isError && total === 0 && (
+            <Card className="mt-3"><CardContent className="flex flex-col items-center gap-3 py-12 text-center">
+              <p className="font-semibold">No professionals match these filters</p>
+              <p className="text-sm text-muted-foreground">Try removing a filter or broadening your search.</p>
+              {chips.length > 0 && <Button variant="outline" size="sm" onClick={clearAll}>Clear all filters</Button>}
+            </CardContent></Card>
+          )}
+
+          {pages > 1 && (
+            <div className="mt-8 flex items-center justify-center gap-3">
+              <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => update({ page: page - 1 })}>
+                <ChevronLeft className="size-4" />Previous
+              </Button>
+              <span className="text-sm text-muted-foreground">Page {Math.min(page, pages)} of {pages}</span>
+              <Button variant="outline" size="sm" disabled={page >= pages} onClick={() => update({ page: page + 1 })}>
+                Next<ChevronRight className="size-4" />
+              </Button>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

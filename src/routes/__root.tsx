@@ -15,6 +15,8 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Header } from "../components/Header";
 import { supabase } from "../integrations/supabase/client";
+import { RealtimeNotifier } from "../components/RealtimeNotifier";
+import { themeInitScript } from "../lib/theme";
 
 function NotFoundComponent() {
   return (
@@ -124,8 +126,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <HeadContent />
       </head>
       <body>
@@ -161,7 +164,8 @@ function RootComponent() {
       <Header />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
-      <Toaster richColors position="top-center" />
+      <RealtimeNotifier />
+      <Toaster richColors position="top-center" visibleToasts={3} duration={5000} closeButton theme="system" />
     </QueryClientProvider>
   );
 }

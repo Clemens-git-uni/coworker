@@ -4,6 +4,7 @@ import { Loader2, MailCheck, Star } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { safeRedirect } from "@/hooks/useAuthUser";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,7 @@ import {
 
 const searchSchema = z.object({
   mode: z.enum(["signin", "signup"]).optional().catch(undefined),
+  redirect: z.string().max(500).optional().catch(undefined),
 });
 
 export const Route = createFileRoute("/auth")({
@@ -45,7 +47,8 @@ export const Route = createFileRoute("/auth")({
 });
 
 function AuthPage() {
-  const { mode } = Route.useSearch();
+  const { mode, redirect } = Route.useSearch();
+  const dest = safeRedirect(redirect);
   const [isSignup, setIsSignup] = useState(mode === "signup");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -65,14 +68,14 @@ function AuthPage() {
           password,
           options: {
             data: { full_name: fullName },
-            emailRedirectTo: window.location.origin,
+            emailRedirectTo: window.location.origin + dest,
           },
         });
         if (error) throw error;
         if (data.session === null) {
           setConfirmationSent(true);
         } else {
-          navigate({ to: "/" });
+          navigate({ href: dest });
         }
       } else {
         const { error } = await supabase.auth.signInWithPassword({
@@ -80,7 +83,7 @@ function AuthPage() {
           password,
         });
         if (error) throw error;
-        navigate({ to: "/" });
+        navigate({ href: dest });
       }
     } catch (error) {
       toast.error(
@@ -94,7 +97,7 @@ function AuthPage() {
   async function handleGoogle() {
     setGoogleLoading(true);
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: window.location.origin + dest,
     });
     if (result.error) {
       toast.error("Google sign-in failed. Please try again.");
@@ -102,7 +105,7 @@ function AuthPage() {
       return;
     }
     if (result.redirected) return;
-    navigate({ to: "/" });
+    navigate({ href: dest });
   }
 
   return (

@@ -22,7 +22,7 @@ export const LANGUAGES: { code: string; name: string }[] = [
   ["ru", "Russian"], ["sk", "Slovak"], ["sl", "Slovenian"], ["sr", "Serbian"], ["sv", "Swedish"], ["sw", "Swahili"],
   ["ta", "Tamil"], ["th", "Thai"], ["tl", "Filipino"], ["tr", "Turkish"], ["uk", "Ukrainian"], ["ur", "Urdu"],
   ["vi", "Vietnamese"], ["zh", "Chinese"],
-].map(([code, name]) => ({ code, name }));
+].map(([code, name]) => ({ code: code!, name: name! }));
 export const languageName = (code: string) => LANGUAGES.find((l) => l.code === code)?.name ?? code.toUpperCase();
 
 export const STATUSES: { value: ProfileStatus; label: string; help: string }[] = [

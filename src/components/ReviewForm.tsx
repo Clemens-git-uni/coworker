@@ -20,7 +20,7 @@ const MAX = 250;
 
 export type ExistingReview = {
   id: string; rating: number; body: string;
-  relationship?: string | null; worked_company?: string | null; worked_from?: string | null; worked_to?: string | null;
+  relationship?: string | null | undefined; worked_company?: string | null | undefined; worked_from?: string | null | undefined; worked_to?: string | null | undefined;
 } | null;
 
 const month = (d?: string | null) => (d ? d.slice(0, 7) : "");

@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { languageName, proficiencyLabel, formatDate, type ProfileAttribute, type ProfileLanguage } from "@/lib/profile-meta";
 import { cn } from "@/lib/utils";
 
-export function StatusBadge({ status, returnDate, className }: { status: string; returnDate?: string | null; className?: string }) {
+export function StatusBadge({ status, returnDate, className }: { status: string; returnDate?: string | null | undefined; className?: string }) {
   if (status !== "on_leave" && status !== "inactive") return null;
   return (
     <Badge variant="outline" className={cn(status === "on_leave" ? "border-warning/60 text-warning" : "text-muted-foreground", className)}>

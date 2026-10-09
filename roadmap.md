@@ -1,8 +1,9 @@
-# CoWorker extensions
-- [x] Bookmarks across search, profiles, and Saved.
-- [x] Private one-to-one realtime messaging and unread counts.
-- [x] Notification dropdown and message pop-ups.
-- [x] Persistent light/dark/system appearance.
-- [x] Shareable expertise/company/review-count filters.
-- [x] Keep only orange-photo Clemens as admin; preserve both accounts.
-- [ ] Validate signed-in flows end to end (needs a signed-in browser session).
+# CoWorker extensions (batch 2)
+- [ ] Landing: live stats, recently reviewed carousel, featured reviews (is_featured override)
+- [ ] Next/previous profile navigation from search results
+- [ ] Languages on profiles (edit, badges, filter)
+- [ ] Review helpful votes, most-helpful sort, unhelpful collapse, rate limits (reuse existing Report)
+- [ ] Shareable review link /r/{slug} with copy/share/QR and regenerate
+- [ ] Automatic attributes from review keywords (+ admin keyword editor, filter)
+- [ ] Profile status active/on leave/inactive
+- [ ] Review relationship/company/dates + verified colleague (work email; sending connects later)

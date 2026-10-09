@@ -358,33 +358,90 @@ export type Database = {
           },
         ]
       }
+      review_votes: {
+        Row: {
+          created_at: string
+          review_id: string
+          user_id: string
+          vote: number
+        }
+        Insert: {
+          created_at?: string
+          review_id: string
+          user_id: string
+          vote: number
+        }
+        Update: {
+          created_at?: string
+          review_id?: string
+          user_id?: string
+          vote?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_votes_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "reviews"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_votes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reviews: {
         Row: {
           body: string
           created_at: string
+          helpful_count: number
           id: string
+          is_featured: boolean
           profile_id: string
           rating: number
+          relationship: string | null
           reviewer_id: string
           status: string
+          unhelpful_count: number
+          worked_company: string | null
+          worked_from: string | null
+          worked_to: string | null
         }
         Insert: {
           body?: string
           created_at?: string
+          helpful_count?: number
           id?: string
+          is_featured?: boolean
           profile_id: string
           rating: number
+          relationship?: string | null
           reviewer_id: string
           status?: string
+          unhelpful_count?: number
+          worked_company?: string | null
+          worked_from?: string | null
+          worked_to?: string | null
         }
         Update: {
           body?: string
           created_at?: string
+          helpful_count?: number
           id?: string
+          is_featured?: boolean
           profile_id?: string
           rating?: number
+          relationship?: string | null
           reviewer_id?: string
           status?: string
+          unhelpful_count?: number
+          worked_company?: string | null
+          worked_from?: string | null
+          worked_to?: string | null
         }
         Relationships: [
           {

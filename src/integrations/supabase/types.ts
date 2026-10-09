@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      attributes: {
+        Row: {
+          created_at: string
+          id: string
+          keywords: string[]
+          label: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          keywords?: string[]
+          label: string
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          keywords?: string[]
+          label?: string
+          slug?: string
+        }
+        Relationships: []
+      }
       bookmarks: {
         Row: {
           created_at: string
@@ -185,6 +209,39 @@ export type Database = {
           {
             foreignKeyName: "notifications_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profile_attributes: {
+        Row: {
+          attribute_id: string
+          mention_count: number
+          profile_id: string
+        }
+        Insert: {
+          attribute_id: string
+          mention_count?: number
+          profile_id: string
+        }
+        Update: {
+          attribute_id?: string
+          mention_count?: number
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_attributes_attribute_id_fkey"
+            columns: ["attribute_id"]
+            isOneToOne: false
+            referencedRelation: "attributes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profile_attributes_profile_id_fkey"
+            columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -478,11 +535,103 @@ export type Database = {
         }
         Relationships: []
       }
+      verified_work_emails: {
+        Row: {
+          domain: string
+          email: string
+          id: string
+          user_id: string
+          verified_at: string
+        }
+        Insert: {
+          domain: string
+          email: string
+          id?: string
+          user_id: string
+          verified_at?: string
+        }
+        Update: {
+          domain?: string
+          email?: string
+          id?: string
+          user_id?: string
+          verified_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verified_work_emails_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      work_email_codes: {
+        Row: {
+          attempts: number
+          code_hash: string
+          created_at: string
+          domain: string
+          email: string
+          expires_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          attempts?: number
+          code_hash: string
+          created_at?: string
+          domain: string
+          email: string
+          expires_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          attempts?: number
+          code_hash?: string
+          created_at?: string
+          domain?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_email_codes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      create_work_email_code: {
+        Args: { _email: string; _user: string }
+        Returns: string
+      }
+      featured_reviews: {
+        Args: { _limit?: number }
+        Returns: {
+          body: string
+          created_at: string
+          helpful_count: number
+          id: string
+          profile_id: string
+          profile_name: string
+          rating: number
+          relationship: string
+          reviewer_name: string
+          worked_company: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -490,17 +639,44 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_free_email_domain: { Args: { _d: string }; Returns: boolean }
       is_participant: {
         Args: { _conv: string; _user: string }
         Returns: boolean
       }
       mark_conversation_read: { Args: { _conv: string }; Returns: undefined }
+      platform_stats: {
+        Args: never
+        Returns: {
+          avg_rating: number
+          professionals: number
+          reviews: number
+        }[]
+      }
       profile_filter_options: {
         Args: never
         Returns: {
           kind: string
           n: number
           value: string
+        }[]
+      }
+      recalc_profile_attributes: { Args: { _pid: string }; Returns: undefined }
+      recently_reviewed: {
+        Args: { _limit?: number }
+        Returns: {
+          avatar_url: string
+          avg_rating: number
+          company: string
+          full_name: string
+          headline: string
+          id: string
+          last_review: string
+          last_review_at: string
+          location: string
+          review_count: number
+          status: string
+          status_return_date: string
         }[]
       }
       refresh_profile_stats: { Args: { _pid: string }; Returns: undefined }
@@ -553,7 +729,51 @@ export type Database = {
           total_count: number
         }[]
       }
+      search_profiles_v3: {
+        Args: {
+          _attributes?: string[]
+          _companies?: string[]
+          _headlines?: string[]
+          _include_inactive?: boolean
+          _languages?: string[]
+          _limit?: number
+          _location?: string
+          _min_proficiency?: string
+          _min_rating?: number
+          _min_reviews?: number
+          _offset?: number
+          _q?: string
+          _sort?: string
+        }
+        Returns: {
+          avatar_url: string
+          avg_rating: number
+          company: string
+          created_at: string
+          full_name: string
+          headline: string
+          id: string
+          languages: Json
+          location: string
+          review_count: number
+          status: string
+          status_return_date: string
+          top_attributes: Json
+          total_count: number
+        }[]
+      }
       start_conversation: { Args: { _other: string }; Returns: string }
+      text_mentions: {
+        Args: { _body: string; _keywords: string[] }
+        Returns: boolean
+      }
+      verified_colleague_reviews: {
+        Args: { _profile: string }
+        Returns: {
+          review_id: string
+        }[]
+      }
+      verify_work_email: { Args: { _code: string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

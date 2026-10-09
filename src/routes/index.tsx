@@ -4,6 +4,7 @@ import { ArrowRight, CheckCircle2, Search, ShieldCheck, Star, Users } from "luci
 import { supabase } from "@/integrations/supabase/client";
 
 import { Button } from "@/components/ui/button";
+import { FeaturedReviews, RecentlyReviewed, StatsStrip } from "@/components/LandingSections";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -131,6 +132,10 @@ function LandingPage() {
           </div>
         </div>
       </section>
+
+      <StatsStrip />
+      <RecentlyReviewed />
+      <FeaturedReviews />
 
       {/* Features */}
       <section className="mx-auto max-w-6xl px-4 py-16 md:py-24">

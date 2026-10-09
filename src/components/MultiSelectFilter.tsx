@@ -3,14 +3,14 @@ import { Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-export interface FilterOption { value: string; count: number }
+export interface FilterOption { value: string; count: number; label?: string }
 
 /** Searchable checkbox list for multi-select filters. */
-export function MultiSelectFilter({ label, options, selected, onChange, loading }: {
-  label: string; options: FilterOption[]; selected: string[]; onChange: (next: string[]) => void; loading?: boolean;
+export function MultiSelectFilter({ label, options, selected, onChange, loading, hideCounts }: {
+  label: string; options: FilterOption[]; selected: string[]; onChange: (next: string[]) => void; loading?: boolean; hideCounts?: boolean;
 }) {
   const [term, setTerm] = useState("");
-  const shown = options.filter((o) => o.value.toLowerCase().includes(term.toLowerCase())).slice(0, 50);
+  const shown = options.filter((o) => (o.label ?? o.value).toLowerCase().includes(term.toLowerCase())).slice(0, 50);
   const id = label.toLowerCase().replace(/\W+/g, "-");
 
   function toggle(v: string) {
@@ -32,8 +32,8 @@ export function MultiSelectFilter({ label, options, selected, onChange, loading 
                 <span className={cn("flex size-4 shrink-0 items-center justify-center rounded border", on ? "border-primary bg-primary text-primary-foreground" : "border-input")}>
                   {on && <Check className="size-3" />}
                 </span>
-                <span className="min-w-0 flex-1 truncate">{o.value}</span>
-                <span className="text-xs text-muted-foreground">{o.count}</span>
+                <span className="min-w-0 flex-1 truncate">{o.label ?? o.value}</span>
+                {!hideCounts && <span className="text-xs text-muted-foreground">{o.count}</span>}
               </button>
             );
           })}

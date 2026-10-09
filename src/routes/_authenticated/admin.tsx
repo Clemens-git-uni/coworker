@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StarRating } from "@/components/StarRating";
 import { reasonLabel } from "@/lib/moderation";
+import { AttributesManager } from "@/components/AttributesManager";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -27,7 +28,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminPage,
 });
 
-type Status = "open" | "resolved" | "dismissed";
+type Status = "open" | "resolved" | "dismissed" | "strengths";
 
 function AdminPage() {
   const { user } = Route.useRouteContext();
@@ -45,7 +46,7 @@ function AdminPage() {
 
   const reportsQ = useQuery({
     queryKey: ["reports", tab],
-    enabled: roleQ.data === true,
+    enabled: roleQ.data === true && tab !== "strengths",
     queryFn: async () => {
       const { data, error } = await supabase
         .from("reports")
@@ -89,10 +90,13 @@ function AdminPage() {
           <TabsTrigger value="open">Open</TabsTrigger>
           <TabsTrigger value="resolved">Resolved</TabsTrigger>
           <TabsTrigger value="dismissed">Dismissed</TabsTrigger>
+          <TabsTrigger value="strengths">Strengths</TabsTrigger>
         </TabsList>
       </Tabs>
 
-      {reportsQ.isLoading ? (
+      {tab === "strengths" ? (
+        <AttributesManager />
+      ) : reportsQ.isLoading ? (
         <Skeleton className="h-32" />
       ) : reports.length === 0 ? (
         <Card><CardContent className="py-10 text-center text-muted-foreground">No {tab} reports.</CardContent></Card>

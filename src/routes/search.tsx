@@ -16,6 +16,9 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProfileCard } from "@/components/ProfileCard";
 import { MultiSelectFilter, type FilterOption } from "@/components/MultiSelectFilter";
+import { Switch } from "@/components/ui/switch";
+import { LANGUAGES, PROFICIENCIES, languageName, proficiencyLabel } from "@/lib/profile-meta";
+import { saveResultsNav, takeScrollRestore } from "@/lib/results-nav";
 
 const PAGE_SIZE = 12;
 const REVIEW_PRESETS = [0, 1, 5, 10, 25, 50];
@@ -27,6 +30,10 @@ const searchSchema = z.object({
   minReviews: fallback(z.number().int(), 0).default(0),
   positions: fallback(z.array(z.string().max(200)).max(30), []).default([]),
   companies: fallback(z.array(z.string().max(200)).max(30), []).default([]),
+  languages: fallback(z.array(z.string().max(10)).max(20), []).default([]),
+  minProficiency: fallback(z.string(), "").default(""),
+  attributes: fallback(z.array(z.string().max(60)).max(20), []).default([]),
+  showInactive: fallback(z.boolean(), false).default(false),
   sort: fallback(z.string(), "rating").default("rating"),
   page: fallback(z.number().int(), 1).default(1),
 });
@@ -70,25 +77,63 @@ function SearchPage() {
     },
   });
 
-  const { data, isLoading, isFetching, isError, refetch } = useQuery({
-    queryKey: ["search", s.q, s.location, minRating, minReviews, s.positions, s.companies, sort, page],
-    placeholderData: keepPreviousData,
+  const minProficiency = PROFICIENCIES.some((p) => p.value === s.minProficiency) ? s.minProficiency : "";
+  const attrQ = useQuery({
+    queryKey: ["attributes"],
+    staleTime: 300_000,
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("search_profiles_v2", {
-        _q: s.q.slice(0, 100),
-        _location: s.location.slice(0, 100),
-        _min_rating: minRating,
-        _headlines: s.positions,
-        _companies: s.companies,
-        _min_reviews: minReviews,
-        _sort: sort,
-        _limit: PAGE_SIZE,
-        _offset: (page - 1) * PAGE_SIZE,
-      });
+      const { data, error } = await supabase.from("attributes").select("slug, label").order("label");
       if (error) throw error;
       return data;
     },
   });
+  const attrLabel = (slug: string) => attrQ.data?.find((a) => a.slug === slug)?.label ?? slug;
+
+  const filterArgs = {
+    _q: s.q.slice(0, 100),
+    _location: s.location.slice(0, 100),
+    _min_rating: minRating,
+    _headlines: s.positions,
+    _companies: s.companies,
+    _min_reviews: minReviews,
+    _languages: s.languages,
+    _min_proficiency: minProficiency,
+    _attributes: s.attributes,
+    _include_inactive: s.showInactive,
+    _sort: sort,
+  };
+  const filterKey = JSON.stringify(filterArgs);
+
+  const { data, isLoading, isFetching, isError, refetch } = useQuery({
+    queryKey: ["search", filterKey, page],
+    placeholderData: keepPreviousData,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("search_profiles_v3", { ...filterArgs, _limit: PAGE_SIZE, _offset: (page - 1) * PAGE_SIZE });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Full ordered id list (lightweight) so profile pages can offer previous/next.
+  const idsQ = useQuery({
+    queryKey: ["search-ids", filterKey],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("search_profiles_v3", { ...filterArgs, _limit: 500, _offset: 0 }).select("id");
+      if (error) throw error;
+      return (data as { id: string }[]).map((r) => r.id);
+    },
+  });
+
+  useEffect(() => {
+    if (isLoading) return;
+    const y = takeScrollRestore();
+    if (y !== null) requestAnimationFrame(() => window.scrollTo(0, y));
+  }, [isLoading]);
+
+  function rememberResults() {
+    const ids = idsQ.data ?? (data ?? []).map((r) => r.id);
+    saveResultsNav({ ids, backHref: window.location.pathname + window.location.search, scrollY: window.scrollY });
+  }
 
   const results = data ?? [];
   const total = Number(results[0]?.total_count ?? 0);
@@ -105,6 +150,9 @@ function SearchPage() {
     ...(minReviews ? [{ label: `${minReviews}+ reviews`, remove: () => update({ minReviews: 0 }) }] : []),
     ...s.positions.map((p) => ({ label: p, remove: () => update({ positions: s.positions.filter((x) => x !== p) }) })),
     ...s.companies.map((c) => ({ label: c, remove: () => update({ companies: s.companies.filter((x) => x !== c) }) })),
+    ...s.languages.map((l) => ({ label: `${languageName(l)}${minProficiency ? ` (${proficiencyLabel(minProficiency)}+)` : ""}`, remove: () => update({ languages: s.languages.filter((x) => x !== l) }) })),
+    ...s.attributes.map((a) => ({ label: attrLabel(a), remove: () => update({ attributes: s.attributes.filter((x) => x !== a) }) })),
+    ...(s.showInactive ? [{ label: "Including inactive", remove: () => update({ showInactive: false }) }] : []),
   ];
   const clearAll = () => navigate({ search: { sort } as SearchParams });
 
@@ -114,6 +162,22 @@ function SearchPage() {
         selected={s.positions} onChange={(positions) => update({ positions })} />
       <MultiSelectFilter label="Company" options={optionsQ.data?.companies ?? []} loading={optionsQ.isLoading}
         selected={s.companies} onChange={(companies) => update({ companies })} />
+      <MultiSelectFilter label="Language" options={LANGUAGES.map((l) => ({ value: l.code, label: l.name, count: 0 }))}
+        selected={s.languages} onChange={(languages) => update({ languages })} hideCounts />
+      {s.languages.length > 0 && (
+        <fieldset className="space-y-2">
+          <legend className="text-sm font-semibold">Minimum proficiency</legend>
+          <Select value={minProficiency || "any"} onValueChange={(v) => update({ minProficiency: v === "any" ? "" : v })}>
+            <SelectTrigger aria-label="Minimum proficiency"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="any">Any level</SelectItem>
+              {PROFICIENCIES.map((p) => <SelectItem key={p.value} value={p.value}>{p.label}+</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </fieldset>
+      )}
+      <MultiSelectFilter label="Strengths" options={(attrQ.data ?? []).map((a) => ({ value: a.slug, label: a.label, count: 0 }))}
+        loading={attrQ.isLoading} selected={s.attributes} onChange={(attributes) => update({ attributes })} hideCounts />
       <fieldset className="space-y-2">
         <legend className="text-sm font-semibold">Minimum reviews</legend>
         <div className="flex flex-wrap gap-1.5">
@@ -135,6 +199,11 @@ function SearchPage() {
           </SelectContent>
         </Select>
       </fieldset>
+      <div className="flex items-center justify-between gap-2">
+        <Label htmlFor="show-inactive" className="text-sm font-semibold">Show inactive profiles</Label>
+        <Switch id="show-inactive" checked={s.showInactive} onCheckedChange={(v) => update({ showInactive: v })} />
+      </div>
+      <p className="-mt-4 text-xs text-muted-foreground">Profiles on leave are always included, with a badge.</p>
     </div>
   );
 
@@ -211,7 +280,7 @@ function SearchPage() {
           <div className={`mt-3 grid gap-4 sm:grid-cols-2 xl:grid-cols-3 ${isFetching && !isLoading ? "opacity-60" : ""}`}>
             {isLoading
               ? Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-36" />)
-              : results.map((p) => <ProfileCard key={p.id} p={p} />)}
+              : results.map((p) => <ProfileCard key={p.id} p={p} onOpen={rememberResults} linkSearch={{ nav: true }} />)}
           </div>
 
           {isError && (

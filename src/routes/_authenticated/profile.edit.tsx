@@ -9,6 +9,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LanguagesEditor } from "@/components/settings/LanguagesEditor";
+import { StatusEditor } from "@/components/settings/StatusEditor";
+import { ReviewLinkSettings } from "@/components/settings/ReviewLinkSettings";
+import { WorkEmailSettings } from "@/components/settings/WorkEmailSettings";
 
 export const Route = createFileRoute("/_authenticated/profile/edit")({
   head: () => ({
@@ -81,7 +85,6 @@ function EditProfile() {
     }
     await qc.invalidateQueries({ queryKey: ["profile", user.id] });
     toast.success("Profile updated");
-    navigate({ to: "/profile/$id", params: { id: user.id } });
   }
 
   const field = (key: keyof Form, label: string, placeholder = "") => (
@@ -97,7 +100,7 @@ function EditProfile() {
   );
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8">
+    <div className="mx-auto max-w-2xl space-y-6 px-4 py-8">
       <Card>
         <CardHeader><CardTitle>Edit profile</CardTitle></CardHeader>
         <CardContent>
@@ -116,6 +119,10 @@ function EditProfile() {
           </form>
         </CardContent>
       </Card>
+      <LanguagesEditor userId={user.id} />
+      {data && <StatusEditor userId={user.id} initial={{ status: data.status, status_return_date: data.status_return_date, status_note: data.status_note }} />}
+      {data && <ReviewLinkSettings userId={user.id} slug={data.review_slug} name={data.full_name} />}
+      <WorkEmailSettings userId={user.id} />
     </div>
   );
 }

@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StarRating } from "@/components/StarRating";
 import { ReviewForm } from "@/components/ReviewForm";
+import { ReviewItem, type ReviewRow } from "@/components/ReviewItem";
 
 export const Route = createFileRoute("/profile/$id")({
   head: () => ({
@@ -51,11 +52,14 @@ function ProfilePage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("reviews")
-        .select("id, rating, body, created_at, reviewer:profiles!reviews_reviewer_id_fkey(id, full_name, avatar_url, headline)")
+        .select("id, rating, body, created_at, status, reviewer:profiles!reviews_reviewer_id_fkey(id, full_name, avatar_url), reply:review_replies(body, created_at)")
         .eq("profile_id", id)
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data;
+      return (data ?? []).map((r) => ({
+        ...r,
+        reply: Array.isArray(r.reply) ? (r.reply[0] ?? null) : (r.reply ?? null),
+      })) as ReviewRow[];
     },
   });
 
@@ -79,11 +83,12 @@ function ProfilePage() {
   }
 
   const reviews = reviewsQ.data ?? [];
-  const total = reviews.length;
-  const avg = total ? reviews.reduce((s, r) => s + r.rating, 0) / total : 0;
+  const visible = reviews.filter((r) => r.status === "visible");
+  const total = visible.length;
+  const avg = total ? visible.reduce((s, r) => s + r.rating, 0) / total : 0;
   const counts = [5, 4, 3, 2, 1].map((star) => ({
     star,
-    count: reviews.filter((r) => r.rating === star).length,
+    count: visible.filter((r) => r.rating === star).length,
   }));
 
   return (
@@ -172,30 +177,7 @@ function ProfilePage() {
           <Card><CardContent className="py-10 text-center text-muted-foreground">No reviews yet.</CardContent></Card>
         ) : (
           reviews.map((r) => (
-            <Card key={r.id}>
-              <CardContent className="space-y-2 pt-6">
-                <div className="flex items-center gap-3">
-                  <Avatar className="size-9">
-                    <AvatarImage src={r.reviewer?.avatar_url ?? undefined} />
-                    <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
-                      {initials(r.reviewer?.full_name ?? "")}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="min-w-0 flex-1">
-                    {r.reviewer ? (
-                      <Link to="/profile/$id" params={{ id: r.reviewer.id }} className="font-semibold hover:underline">
-                        {r.reviewer.full_name || "Anonymous"}
-                      </Link>
-                    ) : (
-                      <span className="font-semibold">Anonymous</span>
-                    )}
-                    <p className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString()}</p>
-                  </div>
-                  <StarRating value={r.rating} />
-                </div>
-                {r.body && <p className="text-sm text-foreground/90">{r.body}</p>}
-              </CardContent>
-            </Card>
+            <ReviewItem key={r.id} review={r} profileId={profile.id} profileName={profile.full_name} myId={myId} />
           ))
         )}
       </section>

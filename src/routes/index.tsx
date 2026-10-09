@@ -183,7 +183,11 @@ function LandingPage() {
             </span>
             CoWorker
           </span>
-          <span>© 2026 CoWorker. All rights reserved.</span>
+          <span className="flex items-center gap-4">
+            <Link to="/guidelines" className="hover:text-foreground">Review Guidelines</Link>
+            <Link to="/terms" className="hover:text-foreground">Terms of Use</Link>
+            <span>© 2026 CoWorker</span>
+          </span>
         </div>
       </footer>
     </div>

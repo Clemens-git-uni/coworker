@@ -1,9 +1,10 @@
 # CoWorker extensions (batch 2)
-- [ ] Landing: live stats, recently reviewed carousel, featured reviews (is_featured override)
-- [ ] Next/previous profile navigation from search results
-- [ ] Languages on profiles (edit, badges, filter)
-- [ ] Review helpful votes, most-helpful sort, unhelpful collapse, rate limits (reuse existing Report)
-- [ ] Shareable review link /r/{slug} with copy/share/QR and regenerate
-- [ ] Automatic attributes from review keywords (+ admin keyword editor, filter)
-- [ ] Profile status active/on leave/inactive
-- [ ] Review relationship/company/dates + verified colleague (work email; sending connects later)
+- [x] Landing: live stats, recently reviewed carousel, featured reviews (is_featured override)
+- [x] Next/previous profile navigation from search results
+- [x] Languages on profiles (edit, badges, filter)
+- [x] Review helpful votes, most-helpful sort, unhelpful collapse, rate limits (reuse existing Report)
+- [x] Shareable review link /r/{slug} with copy/share/QR and regenerate
+- [x] Automatic attributes from review keywords (+ admin keyword editor, filter)
+- [x] Profile status active/on leave/inactive
+- [x] Review relationship/company/dates + verified colleague (work email; sending connects later)
+- [ ] Work email codes are created but not emailed until an email sender domain is connected

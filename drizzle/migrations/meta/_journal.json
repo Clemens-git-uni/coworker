@@ -43,6 +43,13 @@
       "when": 1791538996541,
       "tag": "0005_bookmarks_messaging_notifications_filters",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791539006881,
+      "tag": "0006_protect_profile_stats",
+      "breakpoints": true
     }
   ]
 }

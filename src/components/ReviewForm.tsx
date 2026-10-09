@@ -10,11 +10,21 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RELATIONSHIPS } from "@/lib/profile-meta";
 import { containsAbuse } from "@/lib/moderation";
 
 const MAX = 250;
 
-export type ExistingReview = { id: string; rating: number; body: string } | null;
+export type ExistingReview = {
+  id: string; rating: number; body: string;
+  relationship?: string | null; worked_company?: string | null; worked_from?: string | null; worked_to?: string | null;
+} | null;
+
+const month = (d?: string | null) => (d ? d.slice(0, 7) : "");
+const thisMonth = () => new Date().toISOString().slice(0, 7);
 
 export function ReviewForm({
   profileId,
@@ -31,12 +41,31 @@ export function ReviewForm({
   const [hover, setHover] = useState(0);
   const [body, setBody] = useState(existing?.body ?? "");
   const [busy, setBusy] = useState(false);
+  const [relationship, setRelationship] = useState(existing?.relationship ?? "");
+  const [company, setCompany] = useState(existing?.worked_company ?? "");
+  const [from, setFrom] = useState(month(existing?.worked_from));
+  const [to, setTo] = useState(month(existing?.worked_to));
+  const [present, setPresent] = useState(existing ? !existing.worked_to : false);
 
   useEffect(() => {
     setEditing(!existing);
     setRating(existing?.rating ?? 0);
     setBody(existing?.body ?? "");
+    setRelationship(existing?.relationship ?? "");
+    setCompany(existing?.worked_company ?? "");
+    setFrom(month(existing?.worked_from));
+    setTo(month(existing?.worked_to));
+    setPresent(existing ? !existing.worked_to : false);
   }, [existing]);
+
+  const { data: companies } = useQuery({
+    queryKey: ["filter-options-companies"],
+    staleTime: 300_000,
+    queryFn: async () => {
+      const { data } = await supabase.rpc("profile_filter_options");
+      return (data ?? []).filter((d) => d.kind === "company").map((d) => d.value);
+    },
+  });
 
   const [accept, setAccept] = useState(false);
   const { data: me } = useQuery({
@@ -54,7 +83,9 @@ export function ReviewForm({
 
   const len = body.length;
   const abusive = containsAbuse(body);
-  const invalid = rating < 1 || body.trim().length === 0 || len > MAX;
+  const dateError = !from ? "" : from > thisMonth() ? "Start can't be in the future." : !present && to && to < from ? "End can't be before start." : "";
+  const contextMissing = !relationship || !company.trim() || !from || (!present && !to);
+  const invalid = rating < 1 || body.trim().length === 0 || len > MAX || contextMissing || !!dateError;
   const counterColor =
     len >= MAX ? "text-destructive" : len >= 220 ? "text-warning" : "text-muted-foreground";
 
@@ -74,7 +105,10 @@ export function ReviewForm({
         .eq("id", reviewerId);
       if (gErr) { setBusy(false); toast.error(gErr.message); return; }
     }
-    const payload = { rating, body: body.trim() };
+    const payload = {
+      rating, body: body.trim(), relationship, worked_company: company.trim().slice(0, 100),
+      worked_from: `${from}-01`, worked_to: present ? null : `${to}-01`,
+    };
     const { error } = existing
       ? await supabase.from("reviews").update(payload).eq("id", existing.id)
       : await supabase.from("reviews").insert({ ...payload, profile_id: profileId, reviewer_id: reviewerId });
@@ -150,6 +184,34 @@ export function ReviewForm({
               </button>
             ))}
             <span className="ml-2 text-sm text-muted-foreground">{rating ? `${rating} of 5` : "Select a rating"}</span>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="rel">How did you work together? *</Label>
+              <Select value={relationship} onValueChange={setRelationship}>
+                <SelectTrigger id="rel" aria-required><SelectValue placeholder="Select relationship" /></SelectTrigger>
+                <SelectContent>
+                  {RELATIONSHIPS.map((r) => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="wc">Company *</Label>
+              <Input id="wc" list="wc-list" value={company} maxLength={100} onChange={(e) => setCompany(e.target.value)} placeholder="Where you worked together" aria-required />
+              <datalist id="wc-list">{(companies ?? []).map((c) => <option key={c} value={c} />)}</datalist>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="wf">From *</Label>
+              <Input id="wf" type="month" value={from} max={thisMonth()} onChange={(e) => setFrom(e.target.value)} aria-required />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="wt">To *</Label>
+              <Input id="wt" type="month" value={present ? "" : to} min={from || undefined} max={thisMonth()} disabled={present} onChange={(e) => setTo(e.target.value)} />
+              <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Checkbox checked={present} onCheckedChange={(v) => setPresent(v === true)} />Still working together (Present)
+              </label>
+            </div>
+            {dateError && <p className="text-xs text-destructive sm:col-span-2" role="alert">{dateError}</p>}
           </div>
           <div className="space-y-1">
             <Textarea

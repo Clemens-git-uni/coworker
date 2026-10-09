@@ -92,6 +92,8 @@ export function ReviewForm({
   async function refresh() {
     await qc.invalidateQueries({ queryKey: ["reviews", profileId] });
     await qc.invalidateQueries({ queryKey: ["review-eligibility", reviewerId] });
+    await qc.invalidateQueries({ queryKey: ["my-review-for", profileId] });
+    qc.invalidateQueries({ queryKey: ["profile-attributes", profileId] });
   }
 
   async function submit(e: React.FormEvent) {

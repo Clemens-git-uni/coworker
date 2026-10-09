@@ -16,6 +16,8 @@ import { Route as GuidelinesRouteImport } from './routes/guidelines'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
+import { Route as AuthenticatedSavedRouteImport } from './routes/_authenticated/saved'
 import { Route as ProfileIdRouteImport } from './routes/profile.$id'
 import { Route as AuthenticatedProfileEditRouteImport } from './routes/_authenticated/profile.edit'
 
@@ -53,6 +55,16 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMessagesRoute = AuthenticatedMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSavedRoute = AuthenticatedSavedRouteImport.update({
+  id: '/saved',
+  path: '/saved',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ProfileIdRoute = ProfileIdRouteImport.update({
   id: '/profile/$id',
   path: '/profile/$id',
@@ -72,6 +84,8 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/messages': typeof AuthenticatedMessagesRoute
+  '/saved': typeof AuthenticatedSavedRoute
   '/profile/$id': typeof ProfileIdRoute
   '/profile/edit': typeof AuthenticatedProfileEditRoute
 }
@@ -82,6 +96,8 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/messages': typeof AuthenticatedMessagesRoute
+  '/saved': typeof AuthenticatedSavedRoute
   '/profile/$id': typeof ProfileIdRoute
   '/profile/edit': typeof AuthenticatedProfileEditRoute
 }
@@ -94,6 +110,8 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/terms': typeof TermsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/messages': typeof AuthenticatedMessagesRoute
+  '/_authenticated/saved': typeof AuthenticatedSavedRoute
   '/profile/$id': typeof ProfileIdRoute
   '/_authenticated/profile/edit': typeof AuthenticatedProfileEditRoute
 }
@@ -106,6 +124,8 @@ export interface FileRouteTypes {
     | '/search'
     | '/terms'
     | '/admin'
+    | '/messages'
+    | '/saved'
     | '/profile/$id'
     | '/profile/edit'
   fileRoutesByTo: FileRoutesByTo
@@ -116,6 +136,8 @@ export interface FileRouteTypes {
     | '/search'
     | '/terms'
     | '/admin'
+    | '/messages'
+    | '/saved'
     | '/profile/$id'
     | '/profile/edit'
   id:
@@ -127,6 +149,8 @@ export interface FileRouteTypes {
     | '/search'
     | '/terms'
     | '/_authenticated/admin'
+    | '/_authenticated/messages'
+    | '/_authenticated/saved'
     | '/profile/$id'
     | '/_authenticated/profile/edit'
   fileRoutesById: FileRoutesById
@@ -192,6 +216,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/messages': {
+      id: '/_authenticated/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof AuthenticatedMessagesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/saved': {
+      id: '/_authenticated/saved'
+      path: '/saved'
+      fullPath: '/saved'
+      preLoaderRoute: typeof AuthenticatedSavedRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/profile/$id': {
       id: '/profile/$id'
       path: '/profile/$id'
@@ -211,11 +249,15 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRoute
+  AuthenticatedSavedRoute: typeof AuthenticatedSavedRoute
   AuthenticatedProfileEditRoute: typeof AuthenticatedProfileEditRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedMessagesRoute: AuthenticatedMessagesRoute,
+  AuthenticatedSavedRoute: AuthenticatedSavedRoute,
   AuthenticatedProfileEditRoute: AuthenticatedProfileEditRoute,
 }
 

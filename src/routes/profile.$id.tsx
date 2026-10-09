@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StarRating } from "@/components/StarRating";
+import { BookmarkButton } from "@/components/BookmarkButton";
+import { MessageButton } from "@/components/MessageButton";
 import { ReviewForm } from "@/components/ReviewForm";
 import { ReviewItem, type ReviewRow } from "@/components/ReviewItem";
 
@@ -116,10 +118,15 @@ function ProfilePage() {
               </div>
             </div>
           </div>
-          {myId === profile.id && (
+          {myId === profile.id ? (
             <Button variant="outline" asChild>
               <Link to="/profile/edit"><Pencil className="size-4" />Edit profile</Link>
             </Button>
+          ) : (
+            <div className="flex gap-2">
+              <MessageButton profileId={profile.id} signedIn={!!myId} />
+              <BookmarkButton profileId={profile.id} name={profile.full_name} withLabel />
+            </div>
           )}
         </CardContent>
       </Card>
@@ -164,7 +171,7 @@ function ProfilePage() {
         <Card>
           <CardContent className="flex items-center justify-between gap-3 pt-6">
             <p className="text-sm text-muted-foreground">Worked with this person?</p>
-            <Button asChild size="sm"><Link to="/auth">Sign in to write a review</Link></Button>
+            <Button asChild size="sm"><Link to="/auth" search={{ redirect: `/profile/${profile.id}` }}>Sign in to write a review</Link></Button>
           </CardContent>
         </Card>
       )}

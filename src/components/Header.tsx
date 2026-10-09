@@ -2,7 +2,10 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
-import { LogOut, Pencil, Search, ShieldCheck, Star, User as UserIcon } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Bookmark, LogOut, MessageSquare, Pencil, Search, ShieldCheck, Star, User as UserIcon } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { NotificationBell } from "@/components/NotificationBell";
 
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -47,6 +50,18 @@ export function Header() {
     supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }).then(({ data }) => setIsAdmin(!!data));
   }, [user]);
 
+  const unreadQ = useQuery({
+    queryKey: ["unread-messages", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { count, error } = await supabase.from("messages").select("id", { count: "exact", head: true })
+        .is("read_at", null).neq("sender_id", user!.id);
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
+  const unread = unreadQ.data ?? 0;
+
   async function handleSignOut() {
     await queryClient.cancelQueries();
     queryClient.clear();
@@ -72,13 +87,36 @@ export function Header() {
           </span>
         </Link>
 
-        <nav className="flex items-center gap-2">
+        <nav className="flex items-center gap-1 sm:gap-2">
           <Button variant="ghost" asChild>
             <Link to="/search" activeProps={{ className: "text-primary" }}>
               <Search className="size-4" />
               <span className="hidden sm:inline">Find professionals</span>
             </Link>
           </Button>
+          {user && (
+            <>
+              <Button variant="ghost" asChild aria-label="Saved">
+                <Link to="/saved" activeProps={{ className: "text-primary" }}>
+                  <Bookmark className="size-4" />
+                  <span className="hidden md:inline">Saved</span>
+                </Link>
+              </Button>
+              <Button variant="ghost" asChild className="relative" aria-label={`Messages${unread ? `, ${unread} unread` : ""}`}>
+                <Link to="/messages" activeProps={{ className: "text-primary" }}>
+                  <MessageSquare className="size-4" />
+                  <span className="hidden md:inline">Messages</span>
+                  {unread > 0 && (
+                    <span className="absolute right-0.5 top-0.5 flex min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold leading-4 text-destructive-foreground md:static">
+                      {unread > 9 ? "9+" : unread}
+                    </span>
+                  )}
+                </Link>
+              </Button>
+              <NotificationBell userId={user.id} />
+            </>
+          )}
+          <ThemeToggle />
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -133,7 +171,7 @@ export function Header() {
             </DropdownMenu>
           ) : (
             <>
-              <Button variant="ghost" asChild>
+              <Button variant="ghost" asChild className="hidden sm:inline-flex">
                 <Link to="/auth">Sign in</Link>
               </Button>
               <Button asChild>

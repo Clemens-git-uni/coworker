@@ -12,10 +12,8 @@ import { relationshipLabel } from "@/lib/profile-meta";
 
 function CountUp({ value, decimals = 0, start }: { value: number; decimals?: number; start: boolean }) {
   const [n, setN] = useState(0);
-  const done = useRef(false);
   useEffect(() => {
-    if (!start || done.current) return;
-    done.current = true;
+    if (!start) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setN(value); return; }
     const t0 = performance.now();
     let raf = 0;

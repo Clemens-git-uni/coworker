@@ -36,6 +36,13 @@
       "when": 1791458591923,
       "tag": "0004_trust_and_safety",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791538996541,
+      "tag": "0005_bookmarks_messaging_notifications_filters",
+      "breakpoints": true
     }
   ]
 }

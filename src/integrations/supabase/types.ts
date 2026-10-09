@@ -14,9 +14,187 @@ export type Database = {
   }
   public: {
     Tables: {
+      bookmarks: {
+        Row: {
+          created_at: string
+          profile_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          profile_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          profile_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookmarks_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookmarks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversation_participants: {
+        Row: {
+          conversation_id: string
+          joined_at: string
+          user_id: string
+        }
+        Insert: {
+          conversation_id: string
+          joined_at?: string
+          user_id: string
+        }
+        Update: {
+          conversation_id?: string
+          joined_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_participants_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversation_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversations: {
+        Row: {
+          created_at: string
+          id: string
+          last_message_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_message_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_message_at?: string
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          body: string
+          conversation_id: string
+          created_at: string
+          id: string
+          read_at: string | null
+          sender_id: string
+        }
+        Insert: {
+          body: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          sender_id: string
+        }
+        Update: {
+          body?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          actor_id: string | null
+          body: string
+          created_at: string
+          id: string
+          link: string | null
+          read_at: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          body?: string
+          created_at?: string
+          id?: string
+          link?: string | null
+          read_at?: string | null
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          body?: string
+          created_at?: string
+          id?: string
+          link?: string | null
+          read_at?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
+          avg_rating: number
           company: string
           created_at: string
           full_name: string
@@ -24,10 +202,13 @@ export type Database = {
           headline: string
           id: string
           location: string
+          review_count: number
+          theme: string
           updated_at: string
         }
         Insert: {
           avatar_url?: string | null
+          avg_rating?: number
           company?: string
           created_at?: string
           full_name?: string
@@ -35,10 +216,13 @@ export type Database = {
           headline?: string
           id: string
           location?: string
+          review_count?: number
+          theme?: string
           updated_at?: string
         }
         Update: {
           avatar_url?: string | null
+          avg_rating?: number
           company?: string
           created_at?: string
           full_name?: string
@@ -46,6 +230,8 @@ export type Database = {
           headline?: string
           id?: string
           location?: string
+          review_count?: number
+          theme?: string
           updated_at?: string
         }
         Relationships: []
@@ -206,6 +392,20 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_participant: {
+        Args: { _conv: string; _user: string }
+        Returns: boolean
+      }
+      mark_conversation_read: { Args: { _conv: string }; Returns: undefined }
+      profile_filter_options: {
+        Args: never
+        Returns: {
+          kind: string
+          n: number
+          value: string
+        }[]
+      }
+      refresh_profile_stats: { Args: { _pid: string }; Returns: undefined }
       review_contains_abuse: { Args: { _text: string }; Returns: boolean }
       search_profiles: {
         Args: {
@@ -229,6 +429,32 @@ export type Database = {
           total_count: number
         }[]
       }
+      search_profiles_v2: {
+        Args: {
+          _companies?: string[]
+          _headlines?: string[]
+          _limit?: number
+          _location?: string
+          _min_rating?: number
+          _min_reviews?: number
+          _offset?: number
+          _q?: string
+          _sort?: string
+        }
+        Returns: {
+          avatar_url: string
+          avg_rating: number
+          company: string
+          created_at: string
+          full_name: string
+          headline: string
+          id: string
+          location: string
+          review_count: number
+          total_count: number
+        }[]
+      }
+      start_conversation: { Args: { _other: string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

@@ -71,6 +71,13 @@
       "when": 1791539535580,
       "tag": "0009_step3_attributes_work_emails_landing_search",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1791730045270,
+      "tag": "0010_replies_follow_review_visibility",
+      "breakpoints": true
     }
   ]
 }

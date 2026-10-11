@@ -1,7 +1,7 @@
 import { Linkedin } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function LinkedInLink({ url, label = false, className }: { url?: string | null; label?: boolean; className?: string }) {
+export function LinkedInLink({ url, label = false, className }: { url?: string | null | undefined; label?: boolean; className?: string }) {
   if (!url) return null;
   return (
     <a href={url} target="_blank" rel="noopener noreferrer" aria-label="View on LinkedIn"

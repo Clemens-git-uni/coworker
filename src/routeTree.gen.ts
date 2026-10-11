@@ -19,6 +19,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
 import { Route as AuthenticatedSavedRouteImport } from './routes/_authenticated/saved'
 import { Route as ProfileIdRouteImport } from './routes/profile.$id'
+import { Route as RRouteImport } from './routes/r.'
 import { Route as RSlugRouteImport } from './routes/r.$slug'
 import { Route as AuthenticatedProfileEditRouteImport } from './routes/_authenticated/profile.edit'
 
@@ -71,6 +72,11 @@ const ProfileIdRoute = ProfileIdRouteImport.update({
   path: '/profile/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RRoute = RRouteImport.update({
+  id: '/r/',
+  path: '/r/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RSlugRoute = RSlugRouteImport.update({
   id: '/r/$slug',
   path: '/r/$slug',
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/guidelines': typeof GuidelinesRoute
   '/search': typeof SearchRoute
   '/terms': typeof TermsRoute
+  '/r/': typeof RRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/messages': typeof AuthenticatedMessagesRoute
   '/saved': typeof AuthenticatedSavedRoute
@@ -102,6 +109,7 @@ export interface FileRoutesByTo {
   '/guidelines': typeof GuidelinesRoute
   '/search': typeof SearchRoute
   '/terms': typeof TermsRoute
+  '/r': typeof RRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/messages': typeof AuthenticatedMessagesRoute
   '/saved': typeof AuthenticatedSavedRoute
@@ -117,6 +125,7 @@ export interface FileRoutesById {
   '/guidelines': typeof GuidelinesRoute
   '/search': typeof SearchRoute
   '/terms': typeof TermsRoute
+  '/r/': typeof RRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/messages': typeof AuthenticatedMessagesRoute
   '/_authenticated/saved': typeof AuthenticatedSavedRoute
@@ -132,6 +141,7 @@ export interface FileRouteTypes {
     | '/guidelines'
     | '/search'
     | '/terms'
+    | '/r/'
     | '/admin'
     | '/messages'
     | '/saved'
@@ -145,6 +155,7 @@ export interface FileRouteTypes {
     | '/guidelines'
     | '/search'
     | '/terms'
+    | '/r'
     | '/admin'
     | '/messages'
     | '/saved'
@@ -159,6 +170,7 @@ export interface FileRouteTypes {
     | '/guidelines'
     | '/search'
     | '/terms'
+    | '/r/'
     | '/_authenticated/admin'
     | '/_authenticated/messages'
     | '/_authenticated/saved'
@@ -174,6 +186,7 @@ export interface RootRouteChildren {
   GuidelinesRoute: typeof GuidelinesRoute
   SearchRoute: typeof SearchRoute
   TermsRoute: typeof TermsRoute
+  RRoute: typeof RRoute
   ProfileIdRoute: typeof ProfileIdRoute
   RSlugRoute: typeof RSlugRoute
 }
@@ -250,6 +263,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/r/': {
+      id: '/r/'
+      path: '/r'
+      fullPath: '/r/'
+      preLoaderRoute: typeof RRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/r/$slug': {
       id: '/r/$slug'
       path: '/r/$slug'
@@ -291,6 +311,7 @@ const rootRouteChildren: RootRouteChildren = {
   GuidelinesRoute: GuidelinesRoute,
   SearchRoute: SearchRoute,
   TermsRoute: TermsRoute,
+  RRoute: RRoute,
   ProfileIdRoute: ProfileIdRoute,
   RSlugRoute: RSlugRoute,
 }

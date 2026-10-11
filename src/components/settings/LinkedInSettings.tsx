@@ -74,8 +74,8 @@ export function LinkedInSettings({ userId }: { userId: string }) {
           <Switch checked={isPublic} onCheckedChange={setIsPublic} />
         </label>
         <div className="flex flex-wrap justify-end gap-2">
-          {data && <Button variant="ghost" size="sm" className="text-destructive" onClick={remove} disabled={busy}>{t("linkedin.remove")}</Button>}
-          <Button size="sm" onClick={save} disabled={busy || !normalized || !dirty}>{busy ? t("linkedin.saving") : t("linkedin.save")}</Button>
+          {data && <Button variant="ghost" size="sm" className="text-destructive h-auto whitespace-normal" onClick={remove} disabled={busy}>{t("linkedin.remove")}</Button>}
+          <Button size="sm" onClick={save} disabled={busy || !normalized || !dirty} className="h-auto whitespace-normal">{busy ? t("linkedin.saving") : t("linkedin.save")}</Button>
         </div>
       </CardContent>
     </Card>

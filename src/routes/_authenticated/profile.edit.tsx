@@ -138,11 +138,13 @@ function EditProfile() {
             {field("location", t("settings:profile.location.label"), t("settings:profile.location.placeholder"))}
             {field("avatar_url", t("settings:profile.avatarUrl.label"), t("settings:profile.avatarUrl.placeholder"))}
             {dirty && validationError && <p className="text-sm text-destructive" role="alert">{validationError}</p>}
-            <div className="flex justify-end gap-2 pt-2">
-              <Button type="button" variant="ghost" onClick={() => navigate({ to: "/profile/$id", params: { id: user.id } })}>
+            <div className="flex flex-wrap justify-end gap-2 pt-2">
+              <Button type="button" variant="ghost" onClick={() => navigate({ to: "/profile/$id", params: { id: user.id } })} className="h-auto whitespace-normal">
                 {t("settings:profile.cancel")}
               </Button>
-              <Button type="submit" disabled={saving || !dirty || !!validationError}>{saving ? t("settings:profile.saving") : t("settings:profile.saveChanges")}</Button>
+              <Button type="submit" disabled={saving || !dirty || !!validationError} className="h-auto whitespace-normal">
+                {saving ? t("settings:profile.saving") : t("settings:profile.saveChanges")}
+              </Button>
             </div>
           </form>
         </CardContent>

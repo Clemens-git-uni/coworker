@@ -31,7 +31,7 @@ export function ReviewLinkSettings({ userId, slug, name }: { userId: string; slu
       </CardHeader>
       <CardContent className="space-y-3">
         <ShareReviewLink slug={slug} name={name} />
-        <Button variant="ghost" size="sm" onClick={regenerate} disabled={busy}><RefreshCw className="size-4" />{t("reviewLink.regenerate")}</Button>
+        <Button variant="ghost" size="sm" onClick={regenerate} disabled={busy} className="h-auto whitespace-normal"><RefreshCw className="size-4" />{t("reviewLink.regenerate")}</Button>
       </CardContent>
     </Card>
   );

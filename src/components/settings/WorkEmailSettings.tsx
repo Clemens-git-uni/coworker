@@ -83,7 +83,7 @@ export function WorkEmailSettings({ userId }: { userId: string }) {
               <Label htmlFor="we">{t("workEmail.email.label")}</Label>
               <Input id="we" type="email" required value={email} maxLength={254} onChange={(e) => setEmail(e.target.value)} placeholder={t("workEmail.email.placeholder")} />
             </div>
-            <Button type="submit" disabled={busy || !email}>{busy ? t("workEmail.sending") : t("workEmail.sendCode")}</Button>
+            <Button type="submit" disabled={busy || !email} className="h-auto whitespace-normal">{busy ? t("workEmail.sending") : t("workEmail.sendCode")}</Button>
           </form>
         ) : (
           <form onSubmit={verify} className="flex flex-col gap-2 sm:flex-row sm:items-end">
@@ -91,8 +91,8 @@ export function WorkEmailSettings({ userId }: { userId: string }) {
               <Label htmlFor="wcode">{t("workEmail.code.label", { email })}</Label>
               <Input id="wcode" inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} />
             </div>
-            <Button type="submit" disabled={busy || code.length !== 6}>{t("workEmail.verify")}</Button>
-            <Button type="button" variant="ghost" onClick={() => setStage("email")}>{t("workEmail.changeEmail")}</Button>
+            <Button type="submit" disabled={busy || code.length !== 6} className="h-auto whitespace-normal">{t("workEmail.verify")}</Button>
+            <Button type="button" variant="ghost" onClick={() => setStage("email")} className="h-auto whitespace-normal">{t("workEmail.changeEmail")}</Button>
           </form>
         )}
         <p className="text-xs text-muted-foreground">{t("workEmail.help")}</p>

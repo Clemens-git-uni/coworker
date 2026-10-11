@@ -62,7 +62,7 @@ export function LanguagesEditor({ userId }: { userId: string }) {
             <div className="flex flex-wrap justify-between gap-2 pt-1">
               <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" size="sm" role="combobox" aria-expanded={open} disabled={rows.length >= 15}>
+                  <Button variant="outline" size="sm" role="combobox" aria-expanded={open} disabled={rows.length >= 15} className="h-auto whitespace-normal">
                     <Plus className="size-4" />{t("languages.add")}<ChevronsUpDown className="size-3 opacity-60" />
                   </Button>
                 </PopoverTrigger>
@@ -82,7 +82,7 @@ export function LanguagesEditor({ userId }: { userId: string }) {
                   </Command>
                 </PopoverContent>
               </Popover>
-              <Button size="sm" onClick={save} disabled={saving}>{saving ? t("languages.saving") : t("languages.save")}</Button>
+              <Button size="sm" onClick={save} disabled={saving} className="h-auto whitespace-normal">{saving ? t("languages.saving") : t("languages.save")}</Button>
             </div>
           </>
         )}

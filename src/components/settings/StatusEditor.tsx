@@ -64,7 +64,9 @@ export function StatusEditor({ userId, initial }: {
             </div>
           </div>
         )}
-        <div className="flex justify-end"><Button size="sm" onClick={save} disabled={saving || !dirty}>{saving ? t("status.saving") : t("status.save")}</Button></div>
+        <div className="flex flex-wrap justify-end gap-2">
+          <Button size="sm" onClick={save} disabled={saving || !dirty} className="h-auto whitespace-normal">{saving ? t("status.saving") : t("status.save")}</Button>
+        </div>
       </CardContent>
     </Card>
   );

@@ -215,7 +215,7 @@ function Thread({ conversationId, me, other, loadingMeta }: { conversationId: st
                 mine ? "rounded-br-sm bg-primary text-primary-foreground" : "rounded-bl-sm border bg-card text-card-foreground")}>
                 <p className="whitespace-pre-wrap break-words">{m.body}</p>
                 <p className={cn("mt-0.5 text-right text-[10px]", mine ? "text-primary-foreground/75" : "text-muted-foreground")}>
-                  {new Intl.DateTimeFormat(format.locale, { hour: "2-digit", minute: "2-digit" }).format(new Date(m.created_at))}{mine && m.read_at ? " · Seen" : ""}
+                  {new Intl.DateTimeFormat(format.locale, { hour: "2-digit", minute: "2-digit" }).format(new Date(m.created_at))}{mine && m.read_at ? ` · ${t("seen")}` : ""}
                 </p>
               </div>
             </div>

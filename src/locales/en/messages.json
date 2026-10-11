@@ -1,7 +1,7 @@
 {
   "conversations_title": "Messages",
   "conversations_error": "Couldn't load conversations.",
-  "no_conversations": "No conversations yet. Open a profile and press <1>Message</1> to start one.",
+  "no_conversations": "No conversations yet. Open a profile and press <0>Message</0> to start one.",
   "unread": "{{count}} unread",
   "unread_one": "1 unread",
   "unread_other": "{{count}} unread",

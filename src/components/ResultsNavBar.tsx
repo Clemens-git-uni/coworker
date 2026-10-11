@@ -2,11 +2,15 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { readResultsNav, requestScrollRestore, type ResultsNav } from "@/lib/results-nav";
 import { profileQueryOptions } from "@/lib/profile-queries";
+import { useFormat } from "@/lib/format";
 
 export function ResultsNavBar({ id }: { id: string }) {
+  const { t } = useTranslation("profile");
+  const { number } = useFormat();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const [nav, setNav] = useState<ResultsNav | null>(null);
@@ -34,21 +38,23 @@ export function ResultsNavBar({ id }: { id: string }) {
 
   if (!nav || idx < 0) return null;
   return (
-    <nav aria-label="Search results navigation" className="flex flex-wrap items-center justify-between gap-2">
+    <nav aria-label={t("nav.aria")} className="flex flex-wrap items-center justify-between gap-2">
       <Button variant="ghost" size="sm" asChild>
         <a href={nav.backHref} onClick={(e) => { e.preventDefault(); requestScrollRestore(nav.scrollY); navigate({ href: nav.backHref }); }}>
-          <ArrowLeft className="size-4" />Back to results
+          <ArrowLeft className="size-4" />{t("nav.back")}
         </a>
       </Button>
       <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm" disabled={!prev} asChild={!!prev} aria-label="Previous profile">
-          {prev ? <Link to="/profile/$id" params={{ id: prev }} search={{ nav: true }}><ChevronLeft className="size-4" />Previous</Link>
-            : <span><ChevronLeft className="size-4" />Previous</span>}
+        <Button variant="outline" size="sm" disabled={!prev} asChild={!!prev} aria-label={t("nav.prev_aria")}>
+          {prev ? <Link to="/profile/$id" params={{ id: prev }} search={{ nav: true }}><ChevronLeft className="size-4" />{t("nav.prev")}</Link>
+            : <span><ChevronLeft className="size-4" />{t("nav.prev")}</span>}
         </Button>
-        <span className="text-sm text-muted-foreground" aria-live="polite">{idx + 1} of {nav.ids.length}</span>
-        <Button variant="outline" size="sm" disabled={!next} asChild={!!next} aria-label="Next profile">
-          {next ? <Link to="/profile/$id" params={{ id: next }} search={{ nav: true }}>Next<ChevronRight className="size-4" /></Link>
-            : <span>Next<ChevronRight className="size-4" /></span>}
+        <span className="text-sm text-muted-foreground" aria-live="polite">
+          {t("nav.counter", { current: number(idx + 1), total: number(nav.ids.length) })}
+        </span>
+        <Button variant="outline" size="sm" disabled={!next} asChild={!!next} aria-label={t("nav.next_aria")}>
+          {next ? <Link to="/profile/$id" params={{ id: next }} search={{ nav: true }}>{t("nav.next")}<ChevronRight className="size-4" /></Link>
+            : <span>{t("nav.next")}<ChevronRight className="size-4" /></span>}
         </Button>
       </div>
     </nav>

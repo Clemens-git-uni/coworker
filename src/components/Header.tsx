@@ -5,6 +5,8 @@ import type { User } from "@supabase/supabase-js";
 import { useQuery } from "@tanstack/react-query";
 import { Bookmark, LogOut, MessageSquare, Pencil, Search, ShieldCheck, Star, User as UserIcon } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useTranslation } from "react-i18next";
 import { NotificationBell } from "@/components/NotificationBell";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -30,6 +32,7 @@ function initials(name: string | undefined, email: string | undefined) {
 }
 
 export function Header() {
+  const { t } = useTranslation();
   const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -91,21 +94,21 @@ export function Header() {
           <Button variant="ghost" asChild>
             <Link to="/search" activeProps={{ className: "text-primary" }}>
               <Search className="size-4" />
-              <span className="hidden sm:inline">Find professionals</span>
+              <span className="hidden sm:inline">{t("nav.findProfessionals")}</span>
             </Link>
           </Button>
           {user && (
             <>
-              <Button variant="ghost" asChild aria-label="Saved">
+              <Button variant="ghost" asChild aria-label={t("nav.saved")}>
                 <Link to="/saved" activeProps={{ className: "text-primary" }}>
                   <Bookmark className="size-4" />
-                  <span className="hidden md:inline">Saved</span>
+                  <span className="hidden md:inline">{t("nav.saved")}</span>
                 </Link>
               </Button>
-              <Button variant="ghost" asChild className="relative" aria-label={`Messages${unread ? `, ${unread} unread` : ""}`}>
+              <Button variant="ghost" asChild className="relative" aria-label={unread ? t("nav.messagesUnread", { count: unread }) : t("nav.messages")}>
                 <Link to="/messages" activeProps={{ className: "text-primary" }}>
                   <MessageSquare className="size-4" />
-                  <span className="hidden md:inline">Messages</span>
+                  <span className="hidden md:inline">{t("nav.messages")}</span>
                   {unread > 0 && (
                     <span className="absolute right-0.5 top-0.5 flex min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold leading-4 text-destructive-foreground md:static">
                       {unread > 9 ? "9+" : unread}
@@ -116,16 +119,17 @@ export function Header() {
               <NotificationBell userId={user.id} />
             </>
           )}
+          <LanguageSwitcher />
           <ThemeToggle />
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
                   className="rounded-full outline-none ring-ring focus-visible:ring-2"
-                  aria-label="Account menu"
+                  aria-label={t("nav.accountMenu")}
                 >
                   <Avatar className="size-9">
-                    <AvatarImage src={avatarUrl} alt={displayName ?? "Account"} />
+                    <AvatarImage src={avatarUrl} alt={displayName ?? t("nav.account")} />
                     <AvatarFallback className="bg-primary/10 text-sm font-semibold text-primary">
                       {initials(displayName, user.email)}
                     </AvatarFallback>
@@ -135,7 +139,7 @@ export function Header() {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel className="font-normal">
                   <p className="truncate text-sm font-semibold">
-                    {displayName ?? "Your account"}
+                    {displayName ?? t("nav.yourAccount")}
                   </p>
                   <p className="truncate text-xs text-muted-foreground">
                     {user.email}
@@ -145,38 +149,38 @@ export function Header() {
                 <DropdownMenuItem asChild>
                   <Link to="/profile/$id" params={{ id: user.id }}>
                     <UserIcon className="size-4" />
-                    View profile
+                    {t("nav.viewProfile")}
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link to="/profile/edit">
                     <Pencil className="size-4" />
-                    Edit profile
+                    {t("nav.editProfile")}
                   </Link>
                 </DropdownMenuItem>
                 {isAdmin && (
                   <DropdownMenuItem asChild>
                     <Link to="/admin">
                       <ShieldCheck className="size-4" />
-                      Moderation
+                      {t("nav.moderation")}
                     </Link>
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut}>
                   <LogOut className="size-4" />
-                  Sign out
+                  {t("nav.signOut")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <>
               <Button variant="ghost" asChild className="hidden sm:inline-flex">
-                <Link to="/auth">Sign in</Link>
+                <Link to="/auth">{t("nav.signIn")}</Link>
               </Button>
               <Button asChild>
                 <Link to="/auth" search={{ mode: "signup" }}>
-                  Join now
+                  {t("nav.joinNow")}
                 </Link>
               </Button>
             </>

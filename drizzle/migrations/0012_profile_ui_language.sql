@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS ui_language text CHECK (ui_language IN ('en','de','fr','es','it'));

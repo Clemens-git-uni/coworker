@@ -1,0 +1,33 @@
+{
+  "present": "Present",
+  "proficiency": {
+    "basic": "Basic",
+    "conversational": "Conversational",
+    "professional": "Professional",
+    "native": "Native"
+  },
+  "status": {
+    "active": "Active",
+    "on_leave": "On leave",
+    "inactive": "Inactive"
+  },
+  "statusHelp": {
+    "active": "You're working and open to messages. Shown normally everywhere.",
+    "on_leave": "Temporarily away (parental leave, sabbatical…). You stay in search with an \"On leave\" badge.",
+    "inactive": "Not currently working. Hidden from search and homepage stats, but your profile link still works."
+  },
+  "relationship": {
+    "managed": "Managed them",
+    "reported_to": "Reported to them",
+    "peer": "Peer / same team",
+    "client": "Client",
+    "vendor": "Vendor"
+  },
+  "relationshipFilter": {
+    "managed": "Managers",
+    "reported_to": "Direct reports",
+    "peer": "Peers",
+    "client": "Clients",
+    "vendor": "Vendors"
+  }
+}

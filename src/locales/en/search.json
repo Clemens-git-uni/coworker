@@ -1,0 +1,73 @@
+{
+  "title": "Find professionals",
+  "searchForm": {
+    "qLabel": "Name, company or job title",
+    "qPlaceholder": "e.g. Designer, Acme",
+    "locationLabel": "Location",
+    "locationPlaceholder": "e.g. Vienna",
+    "sortByLabel": "Sort by",
+    "sortOptions": {
+      "rating": "Highest rated",
+      "reviews": "Most reviewed",
+      "newest": "Newest"
+    },
+    "submit": "Search"
+  },
+  "filters": {
+    "title": "Filters",
+    "position": "Position / expertise",
+    "company": "Company",
+    "language": "Language",
+    "minProficiency": "Minimum proficiency",
+    "anyLevel": "Any level",
+    "strengths": "Strengths",
+    "minReviews": "Minimum reviews",
+    "anyReviews": "Any",
+    "minRating": "Minimum rating",
+    "anyRating": "Any rating",
+    "showInactive": "Show inactive profiles",
+    "inactiveHelper": "Profiles on leave are always included, with a badge.",
+    "clearAll": "Clear all",
+    "clearAllFilters": "Clear all filters",
+    "removeFilter": "Remove filter {{label}}",
+    "chips": {
+      "location": "Location: {{location}}",
+      "stars": "{{count}}+ stars",
+      "reviews": "{{count}}+ reviews",
+      "languageWithProficiency": "{{language}} ({{proficiency}}+)",
+      "includingInactive": "Including inactive"
+    }
+  },
+  "results": {
+    "searching": "Searching…",
+    "count_one": "{{formattedCount}} professional found",
+    "count_other": "{{formattedCount}} professionals found",
+    "error": "Search failed to load.",
+    "tryAgain": "Try again",
+    "empty": {
+      "title": "No professionals match these filters",
+      "description": "Try removing a filter or broadening your search."
+    }
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "pageStatus": "Page {{current}} of {{total}}"
+  },
+  "multiSelect": {
+    "searchPlaceholder": "Search {{label}}…",
+    "searchAriaLabel": "Search {{label}}",
+    "loading": "Loading…",
+    "noMatches": "No matches"
+  },
+  "saved": {
+    "title": "Saved professionals",
+    "error": "Couldn't load your saved list. Please refresh.",
+    "empty": {
+      "title": "Nothing saved yet",
+      "description": "Tap the bookmark icon on any professional to keep them here for later.",
+      "action": "Find professionals"
+    },
+    "removeAriaLabel": "Remove {{name}} from Saved"
+  }
+}

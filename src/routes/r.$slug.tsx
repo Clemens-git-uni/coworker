@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Building2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -28,6 +29,7 @@ export const Route = createFileRoute("/r/$slug")({
 });
 
 function ReviewLinkPage() {
+  const { t } = useTranslation("profile");
   const { slug } = Route.useParams();
   const user = useAuthUser();
 
@@ -61,9 +63,9 @@ function ReviewLinkPage() {
   if (profileQ.isError || !p) {
     return (
       <div className="mx-auto max-w-xl px-4 py-20 text-center">
-        <h1 className="text-2xl font-bold">This review link isn't valid</h1>
-        <p className="mt-2 text-muted-foreground">It may have been replaced with a new one. Ask the person for their current link.</p>
-        <Button asChild className="mt-6"><Link to="/search">Find professionals</Link></Button>
+        <h1 className="text-2xl font-bold">{t("review_link.invalid_title")}</h1>
+        <p className="mt-2 text-muted-foreground">{t("review_link.invalid_desc")}</p>
+        <Button asChild className="mt-6"><Link to="/search">{t("review_link.find_professionals")}</Link></Button>
       </div>
     );
   }
@@ -76,7 +78,9 @@ function ReviewLinkPage() {
           <AvatarImage src={p.avatar_url ?? undefined} alt={p.full_name} />
           <AvatarFallback className="bg-primary/10 text-2xl font-semibold text-primary">{initials(p.full_name)}</AvatarFallback>
         </Avatar>
-        <h1 className="mt-3 text-2xl font-bold">How was it working with {p.full_name || "this person"}?</h1>
+        <h1 className="mt-3 text-2xl font-bold">
+          {t("review_link.question", { name: p.full_name || t("review_link.question_default") })}
+        </h1>
         {p.headline && <p className="text-foreground/80">{p.headline}</p>}
         {p.company && <p className="flex items-center gap-1 text-sm text-muted-foreground"><Building2 className="size-4" />{p.company}</p>}
         <StatusBadge status={p.status} returnDate={p.status_return_date} className="mt-2" />
@@ -85,17 +89,17 @@ function ReviewLinkPage() {
       {!user ? (
         <Card>
           <CardContent className="flex flex-col items-center gap-3 py-8 text-center">
-            <p className="font-semibold">Sign in to leave your review</p>
-            <p className="text-sm text-muted-foreground">Reviews are tied to real accounts so they stay trustworthy. You'll come right back here.</p>
+            <p className="font-semibold">{t("review_link.sign_in_title")}</p>
+            <p className="text-sm text-muted-foreground">{t("review_link.sign_in_desc")}</p>
             <div className="flex gap-2">
-              <Button asChild><Link to="/auth" search={{ mode: "signup", redirect }}>Create account</Link></Button>
-              <Button variant="outline" asChild><Link to="/auth" search={{ redirect }}>Sign in</Link></Button>
+              <Button asChild><Link to="/auth" search={{ mode: "signup", redirect }}>{t("review_link.create_account")}</Link></Button>
+              <Button variant="outline" asChild><Link to="/auth" search={{ redirect }}>{t("review_link.sign_in_btn")}</Link></Button>
             </div>
           </CardContent>
         </Card>
       ) : user.id === p.id ? (
         <Card><CardContent className="py-8 text-center text-sm text-muted-foreground">
-          This is your own review link — share it with colleagues. You can't review yourself.
+          {t("review_link.own_link_note")}
         </CardContent></Card>
       ) : mineQ.isLoading ? (
         <Skeleton className="h-64" />
@@ -104,7 +108,7 @@ function ReviewLinkPage() {
       )}
 
       <p className="text-center text-sm">
-        <Link to="/profile/$id" params={{ id: p.id }} className="text-primary hover:underline">View full profile</Link>
+        <Link to="/profile/$id" params={{ id: p.id }} className="text-primary hover:underline">{t("review_link.view_profile")}</Link>
       </p>
     </div>
   );

@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Building2, MapPin } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { StarRating } from "@/components/StarRating";
@@ -7,6 +8,7 @@ import { LinkedInLink } from "@/components/LinkedInLink";
 import { BookmarkButton } from "@/components/BookmarkButton";
 import { AttributePills, LanguageBadges, StatusBadge } from "@/components/ProfileBadges";
 import type { ProfileAttribute, ProfileLanguage } from "@/lib/profile-meta";
+import { useFormat } from "@/lib/format";
 
 export interface ProfileSummary {
   id: string; full_name: string; headline: string; company: string; location: string;
@@ -23,9 +25,12 @@ export function ProfileCard({ p, action, snippet, onOpen, linkSearch }: {
   p: ProfileSummary; action?: React.ReactNode; snippet?: string | null;
   onOpen?: () => void; linkSearch?: { nav?: boolean };
 }) {
+  const { t } = useTranslation("profile");
+  const { number } = useFormat();
   const count = Number(p.review_count);
   const langs = (Array.isArray(p.languages) ? p.languages : []) as ProfileLanguage[];
   const attrs = (Array.isArray(p.top_attributes) ? p.top_attributes : []) as ProfileAttribute[];
+  
   return (
     <Card className="relative h-full transition-shadow hover:shadow-md">
       <CardContent className="flex gap-4 pt-6">
@@ -36,7 +41,7 @@ export function ProfileCard({ p, action, snippet, onOpen, linkSearch }: {
         <div className="min-w-0 flex-1 space-y-1">
           <Link to="/profile/$id" params={{ id: p.id }} search={linkSearch ?? {}} onClick={onOpen}
             className="block truncate font-semibold after:absolute after:inset-0 focus-visible:outline-none focus-visible:after:rounded-xl focus-visible:after:ring-2 focus-visible:after:ring-ring">
-            {p.full_name || "Unnamed professional"}
+            {p.full_name || t("unnamed")}
           </Link>
           {p.status && <StatusBadge status={p.status} returnDate={p.status_return_date} />}
           {p.headline && <p className="line-clamp-2 text-sm text-foreground/80">{p.headline}</p>}
@@ -45,10 +50,10 @@ export function ProfileCard({ p, action, snippet, onOpen, linkSearch }: {
             {p.location && <span className="flex items-center gap-1"><MapPin className="size-3" />{p.location}</span>}
             <LinkedInLink url={p.linkedin_url} className="text-xs" />
           </div>
-          <div className="flex items-center gap-2 pt-1 text-sm">
+          <div className="flex flex-wrap items-center gap-x-2 pt-1 text-sm">
             <StarRating value={Number(p.avg_rating)} />
-            <span className="font-semibold">{count ? Number(p.avg_rating).toFixed(1) : "–"}</span>
-            <span className="text-muted-foreground">({count} {count === 1 ? "review" : "reviews"})</span>
+            <span className="font-semibold">{count ? number(Number(p.avg_rating), { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : "–"}</span>
+            <span className="text-muted-foreground">({t("reviews_count", { count: count })})</span>
           </div>
           {snippet && <p className="line-clamp-2 pt-1 text-sm italic text-muted-foreground">“{snippet}”</p>}
           <LanguageBadges languages={langs} max={3} className="pt-1" />

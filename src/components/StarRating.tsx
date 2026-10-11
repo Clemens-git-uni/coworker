@@ -1,9 +1,13 @@
 import { Star } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
+import { useFormat } from "@/lib/format";
 
 export function StarRating({ value, className }: { value: number; className?: string }) {
+  const { t } = useTranslation("profile");
+  const { number } = useFormat();
   return (
-    <div className={cn("flex items-center gap-0.5", className)} aria-label={`${value.toFixed(1)} out of 5 stars`}>
+    <div className={cn("flex items-center gap-0.5", className)} aria-label={t("rating_aria", { value: number(value, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) })}>
       {[1, 2, 3, 4, 5].map((i) => (
         <Star
           key={i}

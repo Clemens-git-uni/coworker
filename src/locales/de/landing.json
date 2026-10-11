@@ -1,0 +1,58 @@
+{
+  "hero": {
+    "badge": "Die Plattform für berufliche Reputation",
+    "title": "Gute Arbeit verdient einen guten Ruf",
+    "subtitle": "Auf CoWorker kannst du die Profis, mit denen du arbeitest, bewerten – und dir einen eigenen Ruf aufbauen, der für sich selbst spricht.",
+    "cta": {
+      "create": "Profil erstellen",
+      "signedIn": "Angemeldet",
+      "signIn": "Anmelden"
+    }
+  },
+  "preview": {
+    "reviews_one": "{{count}} Bewertung",
+    "reviews_other": "{{count}} Bewertungen",
+    "verifiedColleague": "Verifizierte Kollegen"
+  },
+  "stats": {
+    "professionals": "Profis",
+    "reviews": "Bewertungen",
+    "avgRating": "Durchschnittliche Bewertung",
+    "ariaLabel": "Plattform-Statistiken"
+  },
+  "recentlyReviewed": {
+    "title": "Kürzlich bewertet",
+    "ariaLabel": "Kürzlich bewertete Profis"
+  },
+  "featuredReviews": {
+    "title": "Hervorgehobene Bewertungen",
+    "colleague": "Ein Kollege",
+    "about": "über",
+    "professional": "diesen Profi"
+  },
+  "features": {
+    "sectionTitle": "Reputation, basierend auf echter Arbeit",
+    "honest": {
+      "title": "Ehrliche Bewertungen",
+      "text": "1–5 Sterne und kurze, fokussierte Bewertungen halten das Feedback klar und nützlich."
+    },
+    "professionals": {
+      "title": "Echte Profis",
+      "text": "Jede Bewertung ist mit einem verifizierten Konto verknüpft, sodass Reputation auf Vertrauen basiert."
+    },
+    "search": {
+      "title": "Finde die richtigen Leute",
+      "text": "Durchsuche Profile nach Name, Position oder Unternehmen, um die Personen zu finden, mit denen du arbeiten möchtest."
+    }
+  },
+  "ctaSection": {
+    "title": "Bereit, deinen beruflichen Ruf aufzubauen?",
+    "subtitle": "Werde noch heute Teil von CoWorker – es dauert weniger als eine Minute.",
+    "button": "Jetzt beitreten"
+  },
+  "footer": {
+    "reviewGuidelines": "Bewertungsrichtlinien",
+    "termsOfUse": "Nutzungsbedingungen",
+    "copyright": "© {{year}} CoWorker"
+  }
+}

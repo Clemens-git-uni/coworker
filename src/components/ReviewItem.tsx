@@ -2,10 +2,13 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { BadgeCheck, ChevronDown, Flag, MessageSquareReply, ThumbsDown, ThumbsUp } from "lucide-react";
+import { useTranslation } from "react-i18next";
+
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { reviewContextLabel } from "@/lib/profile-meta";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useFormat } from "@/lib/format";
 
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -52,6 +55,9 @@ export function ReviewItem({
   review: ReviewRow; profileId: string; profileName: string; myId: string | null;
   verified?: boolean; myVote?: number; onVote?: (reviewId: string, vote: number) => void;
 }) {
+  const { t } = useTranslation("reviews");
+  const { t: tc } = useTranslation("common");
+  const fmt = useFormat();
   const flagged = isFlaggedUnhelpful(review);
   const [expanded, setExpanded] = useState(!flagged);
   const context = reviewContextLabel(review);
@@ -75,10 +81,10 @@ export function ReviewItem({
     });
     setBusy(false);
     if (error) {
-      toast.error(error.code === "23505" ? "You've already reported this review." : error.message);
+      toast.error(error.code === "23505" ? t("item.toasts.already_reported") : error.message);
       return;
     }
-    toast.success("Thanks — our moderators will take a look.");
+    toast.success(t("item.toasts.report_submitted"));
     setReportOpen(false); setReason(""); setDetails("");
   }
 
@@ -90,10 +96,10 @@ export function ReviewItem({
     const { error } = await supabase.from("review_replies").insert({ review_id: review.id, author_id: myId, body: text });
     setBusy(false);
     if (error) {
-      toast.error(error.code === "23505" ? "You've already replied to this review." : error.message);
+      toast.error(error.code === "23505" ? t("item.toasts.already_replied") : error.message);
       return;
     }
-    toast.success("Reply posted");
+    toast.success(t("item.toasts.reply_posted"));
     setReplying(false); setReply("");
     await qc.invalidateQueries({ queryKey: ["reviews", profileId] });
   }
@@ -113,10 +119,10 @@ export function ReviewItem({
           <div className="min-w-0 flex-1">
             {review.reviewer ? (
               <Link to="/profile/$id" params={{ id: review.reviewer.id }} className="font-semibold hover:underline">
-                {review.reviewer.full_name || "Anonymous"}
+                {review.reviewer.full_name || t("item.anonymous")}
               </Link>
-            ) : <span className="font-semibold">Anonymous</span>}
-            <p className="text-xs text-muted-foreground">{new Date(review.created_at).toLocaleDateString()}</p>
+            ) : <span className="font-semibold">{t("item.anonymous")}</span>}
+            <p className="text-xs text-muted-foreground">{fmt.date(review.created_at)}</p>
             {(context || verified) && (
               <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                 {context && <span>{context}</span>}
@@ -125,10 +131,10 @@ export function ReviewItem({
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <span tabIndex={0} className="inline-flex items-center gap-1 rounded-full bg-success/15 px-1.5 py-0.5 font-semibold text-success">
-                          <BadgeCheck className="size-3" />Verified colleague
+                          <BadgeCheck className="size-3" />{t("item.verified_colleague")}
                         </span>
                       </TooltipTrigger>
-                      <TooltipContent>Both people verified a work email at this company.</TooltipContent>
+                      <TooltipContent>{t("item.verified_colleague_tooltip")}</TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                 )}
@@ -139,13 +145,13 @@ export function ReviewItem({
         </div>
         {review.status === "hidden" && (
           <p className="rounded-md bg-muted px-3 py-2 text-xs text-muted-foreground">
-            This review has been hidden by a moderator and is only visible to you.
+            {t("item.hidden_notice")}
           </p>
         )}
         {flagged && (
           <button type="button" onClick={() => setExpanded((v) => !v)} aria-expanded={expanded}
             className="flex w-full items-center justify-between rounded-md bg-muted px-3 py-2 text-left text-xs text-muted-foreground hover:bg-accent">
-            Community flagged as unhelpful
+            {t("item.unhelpful_flag")}
             <ChevronDown className={cn("size-4 transition-transform", expanded && "rotate-180")} />
           </button>
         )}
@@ -153,54 +159,54 @@ export function ReviewItem({
 
         {review.reply && (
           <div className="ml-4 border-l-2 border-primary/40 pl-3">
-            <p className="text-xs font-semibold text-primary">Response from {profileName || "the professional"}</p>
+            <p className="text-xs font-semibold text-primary">{t("item.reply_from", { name: profileName || t("item.professional") })}</p>
             <p className="text-sm text-foreground/90">{review.reply.body}</p>
           </div>
         )}
 
         {replying && (
           <div className="ml-4 space-y-2">
-            <Textarea value={reply} onChange={(e) => setReply(e.target.value)} rows={3} placeholder="Write a public reply (you can only reply once)…" />
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-xs text-destructive">{replyAbusive ? "Please remove abusive language." : ""}</span>
+            <Textarea value={reply} onChange={(e) => setReply(e.target.value)} rows={3} placeholder={t("item.reply_placeholder")} />
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-xs text-destructive">{replyAbusive ? t("item.reply_abusive") : ""}</span>
               <div className="flex items-center gap-2">
                 <span className={`text-xs ${reply.length > 250 ? "text-destructive" : "text-muted-foreground"}`}>{reply.length}/250</span>
-                <Button size="sm" variant="ghost" onClick={() => setReplying(false)}>Cancel</Button>
-                <Button size="sm" onClick={submitReply} disabled={busy || !reply.trim() || reply.length > 250 || replyAbusive}>Post reply</Button>
+                <Button size="sm" variant="ghost" onClick={() => setReplying(false)}>{tc("actions.cancel")}</Button>
+                <Button size="sm" onClick={submitReply} disabled={busy || !reply.trim() || reply.length > 250 || replyAbusive}>{t("item.reply_button")}</Button>
               </div>
             </div>
           </div>
         )}
 
         <div className="flex flex-wrap items-center justify-end gap-1">
-          <div className="mr-auto flex items-center gap-1 text-xs text-muted-foreground">
+          <div className="mr-auto flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
             {canVote ? (
               <>
-                <Button size="sm" variant="ghost" aria-pressed={myVote === 1} aria-label="Helpful"
+                <Button size="sm" variant="ghost" aria-pressed={myVote === 1} aria-label={t("item.helpful")}
                   className={cn("h-8 px-2", myVote === 1 && "text-primary")} onClick={() => onVote!(review.id, myVote === 1 ? 0 : 1)}>
-                  <ThumbsUp className={cn("size-4", myVote === 1 && "fill-primary/20")} />Helpful
+                  <ThumbsUp className={cn("size-4", myVote === 1 && "fill-primary/20")} />{t("item.helpful")}
                 </Button>
-                <Button size="sm" variant="ghost" aria-pressed={myVote === -1} aria-label="Not helpful"
+                <Button size="sm" variant="ghost" aria-pressed={myVote === -1} aria-label={t("item.not_helpful")}
                   className={cn("h-8 px-2", myVote === -1 && "text-destructive")} onClick={() => onVote!(review.id, myVote === -1 ? 0 : -1)}>
                   <ThumbsDown className="size-4" />
                 </Button>
               </>
             ) : null}
-            <span>{review.helpful_count ?? 0} found this helpful</span>
+            <span>{t("item.helpful_count", { count: review.helpful_count ?? 0 })}</span>
           </div>
           {isOwner && !review.reply && !replying && (
             <Button size="sm" variant="ghost" onClick={() => setReplying(true)}>
-              <MessageSquareReply className="size-4" />Reply
+              <MessageSquareReply className="size-4" />{t("item.reply_action")}
             </Button>
           )}
           {!isMine && (
             myId ? (
               <Button size="sm" variant="ghost" className="text-muted-foreground" onClick={() => setReportOpen(true)}>
-                <Flag className="size-4" />Report
+                <Flag className="size-4" />{t("item.report_action")}
               </Button>
             ) : (
               <Button size="sm" variant="ghost" className="text-muted-foreground" asChild>
-                <Link to="/auth" search={{ redirect: `/profile/${profileId}` }}><Flag className="size-4" />Report</Link>
+                <Link to="/auth" search={{ redirect: `/profile/${profileId}` }}><Flag className="size-4" />{t("item.report_action")}</Link>
               </Button>
             )
           )}
@@ -210,8 +216,8 @@ export function ReviewItem({
       <Dialog open={reportOpen} onOpenChange={setReportOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Report this review</DialogTitle>
-            <DialogDescription>Tell us why this review breaks our guidelines.</DialogDescription>
+            <DialogTitle>{t("item.report_dialog.title")}</DialogTitle>
+            <DialogDescription>{t("item.report_dialog.description")}</DialogDescription>
           </DialogHeader>
           <RadioGroup value={reason} onValueChange={setReason} className="space-y-1">
             {REPORT_REASONS.map((r) => (
@@ -221,10 +227,10 @@ export function ReviewItem({
               </div>
             ))}
           </RadioGroup>
-          <Textarea value={details} maxLength={500} onChange={(e) => setDetails(e.target.value)} placeholder="Additional details (optional)" rows={3} />
+          <Textarea value={details} maxLength={500} onChange={(e) => setDetails(e.target.value)} placeholder={t("item.report_dialog.details_placeholder")} rows={3} />
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setReportOpen(false)}>Cancel</Button>
-            <Button onClick={submitReport} disabled={!reason || busy}>Submit report</Button>
+            <Button variant="ghost" onClick={() => setReportOpen(false)}>{tc("actions.cancel")}</Button>
+            <Button onClick={submitReport} disabled={!reason || busy}>{t("item.report_dialog.submit")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

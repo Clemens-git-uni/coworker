@@ -1,0 +1,83 @@
+{
+  "form": {
+    "title_new": "Write a review",
+    "title_edit": "Edit your review",
+    "reviewed_already": "You've reviewed this person.",
+    "edit_button": "Edit review",
+    "delete_button": "Delete",
+    "verify_email_notice": "Please verify your email address (check your inbox for the confirmation link) before writing reviews.",
+    "star_rating_label": "Star rating",
+    "stars_one": "{{count}} star",
+    "stars_other": "{{count}} stars",
+    "select_rating": "Select a rating",
+    "rating_of_five": "{{rating}} of 5",
+    "relationship_label": "How did you work together? *",
+    "relationship_placeholder": "Select relationship",
+    "company_label": "Company *",
+    "company_placeholder": "Where you worked together",
+    "from_label": "From *",
+    "to_label": "To *",
+    "present_label": "Still working together (Present)",
+    "body_placeholder": "Share what it's like to work with this person…",
+    "body_aria_label": "Review text",
+    "abusive_notice": "Please remove abusive language — see our Review Guidelines.",
+    "guidelines_notice": "I confirm this review is based on real professional experience and follows the <0>Review Guidelines</0> and <1>Terms of Use</1>.",
+    "change_to_save": "Change any field to save.",
+    "save_button": "Save review",
+    "post_button": "Post review",
+    "delete_confirm": "Delete your review?",
+    "validation": {
+      "rating": "Please select a star rating.",
+      "relationship": "Please choose how you worked together.",
+      "company": "Please enter the company where you worked together.",
+      "from": "Please enter when you started working together.",
+      "future_date": "Start can't be in the future.",
+      "date_order": "End can't be before start.",
+      "to_date": "Please enter an end date or tick Present.",
+      "empty_body": "Please write your review.",
+      "too_long": "Reviews can be at most {{max}} characters."
+    },
+    "toasts": {
+      "already_reviewed": "You've already reviewed this person.",
+      "updated": "Review updated",
+      "posted": "Review posted",
+      "deleted": "Review deleted"
+    }
+  },
+  "item": {
+    "anonymous": "Anonymous",
+    "verified_colleague": "Verified colleague",
+    "verified_colleague_tooltip": "Both people verified a work email at this company.",
+    "hidden_notice": "This review has been hidden by a moderator and is only visible to you.",
+    "unhelpful_flag": "Community flagged as unhelpful",
+    "reply_from": "Response from {{name}}",
+    "professional": "the professional",
+    "reply_placeholder": "Write a public reply (you can only reply once)…",
+    "reply_abusive": "Please remove abusive language.",
+    "reply_button": "Post reply",
+    "helpful": "Helpful",
+    "not_helpful": "Not helpful",
+    "helpful_count_one": "{{count}} found this helpful",
+    "helpful_count_other": "{{count}} found this helpful",
+    "reply_action": "Reply",
+    "report_action": "Report",
+    "report_dialog": {
+      "title": "Report this review",
+      "description": "Tell us why this review breaks our guidelines.",
+      "details_placeholder": "Additional details (optional)",
+      "submit": "Submit report"
+    },
+    "toasts": {
+      "already_reported": "You've already reported this review.",
+      "already_replied": "You've already replied to this review.",
+      "report_submitted": "Thanks — our moderators will take a look.",
+      "reply_posted": "Reply posted"
+    }
+  },
+  "reasons": {
+    "harassment": "Harassment",
+    "false_information": "False information",
+    "spam": "Spam",
+    "other": "Other"
+  }
+}

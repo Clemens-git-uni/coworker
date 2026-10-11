@@ -1,0 +1,58 @@
+{
+  "hero": {
+    "badge": "The professional reputation platform",
+    "title": "Great work deserves a great reputation",
+    "subtitle": "CoWorker lets you rate and review the professionals you work with — and build a reputation that speaks for itself.",
+    "cta": {
+      "create": "Create your profile",
+      "signedIn": "Signed in",
+      "signIn": "Sign in"
+    }
+  },
+  "preview": {
+    "reviews_one": "{{count}} review",
+    "reviews_other": "{{count}} reviews",
+    "verifiedColleague": "Verified colleague"
+  },
+  "stats": {
+    "professionals": "Professionals",
+    "reviews": "Reviews",
+    "avgRating": "Average rating",
+    "ariaLabel": "Platform statistics"
+  },
+  "recentlyReviewed": {
+    "title": "Recently reviewed",
+    "ariaLabel": "Recently reviewed professionals"
+  },
+  "featuredReviews": {
+    "title": "Featured reviews",
+    "colleague": "A colleague",
+    "about": "about",
+    "professional": "this professional"
+  },
+  "features": {
+    "sectionTitle": "Reputation, built on real work",
+    "honest": {
+      "title": "Honest ratings",
+      "text": "1–5 star ratings and short, focused reviews keep feedback clear and useful."
+    },
+    "professionals": {
+      "title": "Real professionals",
+      "text": "Every review is tied to a verified account, so reputations are built on trust."
+    },
+    "search": {
+      "title": "Find the right people",
+      "text": "Browse profiles by name, headline, and company to find who you want to work with."
+    }
+  },
+  "ctaSection": {
+    "title": "Ready to build your professional reputation?",
+    "subtitle": "Join CoWorker today — it takes less than a minute.",
+    "button": "Join now"
+  },
+  "footer": {
+    "reviewGuidelines": "Review Guidelines",
+    "termsOfUse": "Terms of Use",
+    "copyright": "© {{year}} CoWorker"
+  }
+}

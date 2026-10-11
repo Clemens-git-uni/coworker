@@ -324,6 +324,7 @@ export type Database = {
           status_note: string
           status_return_date: string | null
           theme: string
+          ui_language: string | null
           updated_at: string
         }
         Insert: {
@@ -343,6 +344,7 @@ export type Database = {
           status_note?: string
           status_return_date?: string | null
           theme?: string
+          ui_language?: string | null
           updated_at?: string
         }
         Update: {
@@ -362,6 +364,7 @@ export type Database = {
           status_note?: string
           status_return_date?: string | null
           theme?: string
+          ui_language?: string | null
           updated_at?: string
         }
         Relationships: []

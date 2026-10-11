@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -15,14 +16,16 @@ import { ReviewLinkSettings } from "@/components/settings/ReviewLinkSettings";
 import { LinkedInSettings } from "@/components/settings/LinkedInSettings";
 import { useUnsavedWarning } from "@/lib/use-unsaved-warning";
 import { WorkEmailSettings } from "@/components/settings/WorkEmailSettings";
+import { LanguageSelect } from "@/components/LanguageSwitcher";
+import i18n from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/profile/edit")({
   head: () => ({
     meta: [
-      { title: "Edit your profile — CoWorker" },
-      { name: "description", content: "Update your name, headline, company, location and photo." },
-      { property: "og:title", content: "Edit your profile — CoWorker" },
-      { property: "og:description", content: "Update your CoWorker professional profile." },
+      { title: i18n.t("settings:profile.meta.title") },
+      { name: "description", content: i18n.t("settings:profile.meta.description") },
+      { property: "og:title", content: i18n.t("settings:profile.meta.ogTitle") },
+      { property: "og:description", content: i18n.t("settings:profile.meta.ogDescription") },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
@@ -31,19 +34,22 @@ export const Route = createFileRoute("/_authenticated/profile/edit")({
   component: EditProfile,
 });
 
-const schema = z.object({
-  full_name: z.string().trim().min(1, "Name is required").max(100),
-  headline: z.string().trim().max(120),
-  company: z.string().trim().max(100),
-  location: z.string().trim().max(100),
-  avatar_url: z.union([z.literal(""), z.string().trim().url("Photo must be a valid URL").max(500)]),
-});
-type Form = z.infer<typeof schema>;
-
 function EditProfile() {
   const { user } = Route.useRouteContext();
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const { t } = useTranslation(["settings", "common"]);
+  
+  const schema = useMemo(() => z.object({
+    full_name: z.string().trim().min(1, t("settings:profile.error.nameRequired")).max(100, t("settings:profile.error.nameMax")),
+    headline: z.string().trim().max(120, t("settings:profile.error.headlineMax")),
+    company: z.string().trim().max(100, t("settings:profile.error.companyMax")),
+    location: z.string().trim().max(100, t("settings:profile.error.locationMax")),
+    avatar_url: z.union([z.literal(""), z.string().trim().url(t("settings:profile.error.photoUrl")).max(500, t("settings:profile.error.photoMax"))]),
+  }), [t]);
+
+  type Form = z.infer<typeof schema>;
+
   const [form, setForm] = useState<Form>({ full_name: "", headline: "", company: "", location: "", avatar_url: "" });
   const [saving, setSaving] = useState(false);
 
@@ -59,18 +65,19 @@ function EditProfile() {
   useEffect(() => {
     if (data)
       setForm({
-        full_name: data.full_name,
-        headline: data.headline,
-        company: data.company,
-        location: data.location,
+        full_name: data.full_name || "",
+        headline: data.headline || "",
+        company: data.company || "",
+        location: data.location || "",
         avatar_url: data.avatar_url ?? "",
       });
   }, [data]);
 
   const original: Form = data
-    ? { full_name: data.full_name, headline: data.headline, company: data.company, location: data.location, avatar_url: data.avatar_url ?? "" }
+    ? { full_name: data.full_name || "", headline: data.headline || "", company: data.company || "", location: data.location || "", avatar_url: data.avatar_url ?? "" }
     : form;
-  const dirty = (Object.keys(form) as (keyof Form)[]).some((k) => form[k].trim() !== original[k].trim());
+  
+  const dirty = (Object.keys(form) as (keyof Form)[]).some((k) => (form[k] || "").trim() !== (original[k] || "").trim());
   const check = schema.safeParse(form);
   const validationError = check.success ? "" : check.error.issues[0]?.message ?? "";
   useUnsavedWarning(dirty && !saving);
@@ -79,7 +86,7 @@ function EditProfile() {
     e.preventDefault();
     const parsed = schema.safeParse(form);
     if (!parsed.success) {
-      toast.error(parsed.error.issues[0]?.message ?? "Invalid input");
+      toast.error(parsed.error.issues[0]?.message ?? t("settings:profile.error.invalid"));
       return;
     }
     setSaving(true);
@@ -94,7 +101,7 @@ function EditProfile() {
       return;
     }
     await qc.invalidateQueries({ queryKey: ["profile", user.id] });
-    toast.success("Profile updated");
+    toast.success(t("settings:profile.success"));
   }
 
   const field = (key: keyof Form, label: string, placeholder = "") => (
@@ -112,20 +119,32 @@ function EditProfile() {
   return (
     <div className="mx-auto max-w-2xl space-y-6 px-4 py-8">
       <Card>
-        <CardHeader><CardTitle>Edit profile</CardTitle></CardHeader>
+        <CardHeader>
+          <CardTitle className="text-lg">{t("common:language.label")}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <LanguageSelect id="profile-lang" />
+          <p className="text-sm text-muted-foreground">{t("common:language.help")}</p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader><CardTitle>{t("settings:profile.editTitle")}</CardTitle></CardHeader>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-4">
-            {field("full_name", "Full name")}
-            {field("headline", "Headline", "e.g. Senior Product Designer")}
-            {field("company", "Company")}
-            {field("location", "Location", "e.g. Vienna, Austria")}
-            {field("avatar_url", "Photo URL", "https://…")}
+            {field("full_name", t("settings:profile.fullName"))}
+            {field("headline", t("settings:profile.headline.label"), t("settings:profile.headline.placeholder"))}
+            {field("company", t("settings:profile.company"))}
+            {field("location", t("settings:profile.location.label"), t("settings:profile.location.placeholder"))}
+            {field("avatar_url", t("settings:profile.avatarUrl.label"), t("settings:profile.avatarUrl.placeholder"))}
             {dirty && validationError && <p className="text-sm text-destructive" role="alert">{validationError}</p>}
-            <div className="flex justify-end gap-2 pt-2">
-              <Button type="button" variant="ghost" onClick={() => navigate({ to: "/profile/$id", params: { id: user.id } })}>
-                Cancel
+            <div className="flex flex-wrap justify-end gap-2 pt-2">
+              <Button type="button" variant="ghost" onClick={() => navigate({ to: "/profile/$id", params: { id: user.id } })} className="h-auto whitespace-normal">
+                {t("settings:profile.cancel")}
               </Button>
-              <Button type="submit" disabled={saving || !dirty || !!validationError}>{saving ? "Saving…" : "Save changes"}</Button>
+              <Button type="submit" disabled={saving || !dirty || !!validationError} className="h-auto whitespace-normal">
+                {saving ? t("settings:profile.saving") : t("settings:profile.saveChanges")}
+              </Button>
             </div>
           </form>
         </CardContent>

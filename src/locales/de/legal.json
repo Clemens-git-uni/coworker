@@ -1,0 +1,23 @@
+{
+  "terms": {
+    "title": "Nutzungsbedingungen",
+    "intro": "Durch die Nutzung von CoWorker erklärst du dich mit diesen Bedingungen einverstanden.",
+    "rules": {
+      "content": "Du bist für die von dir geposteten Inhalte verantwortlich und musst die Bewertungsrichtlinien einhalten.",
+      "genuine": "Bewertungen müssen deine tatsächliche berufliche Erfahrung widerspiegeln.",
+      "suspension": "Wir behalten uns vor, Inhalte auszublenden oder zu entfernen und Konten zu sperren, die gegen diese Bedingungen verstoßen.",
+      "limit": "Du kannst bis zu 5 Bewertungen pro Tag abgeben."
+    }
+  },
+  "guidelines": {
+    "title": "Bewertungsrichtlinien",
+    "rules": {
+      "experience": "Bewerte nur Personen, mit denen du tatsächlich zusammengearbeitet hast. Bewertungen müssen auf echter beruflicher Erfahrung basieren.",
+      "conduct": "Keine persönlichen Angriffe, Beleidigungen, Belästigungen oder hasserfüllte Sprache.",
+      "facts": "Bleib bei den Fakten. Poste keine falschen oder irreführenden Informationen.",
+      "privacy": "Kein Spam, keine Werbung oder private Informationen wie Telefonnummern oder Adressen.",
+      "onePerPerson": "Eine Bewertung pro Person. Du kannst deine eigene Bewertung jederzeit bearbeiten oder löschen."
+    },
+    "footer": "Bewertungen, die gegen diese Regeln verstoßen, können von unseren Moderatoren ausgeblendet oder entfernt werden."
+  }
+}

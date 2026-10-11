@@ -1,0 +1,23 @@
+{
+  "terms": {
+    "title": "Terms of Use",
+    "intro": "By using CoWorker you agree to these terms.",
+    "rules": {
+      "content": "You are responsible for the content you post and must follow the Review Guidelines.",
+      "genuine": "Reviews must reflect your genuine professional experience.",
+      "suspension": "We may hide or remove content and suspend accounts that break these terms.",
+      "limit": "You may post up to 5 reviews per day."
+    }
+  },
+  "guidelines": {
+    "title": "Review Guidelines",
+    "rules": {
+      "experience": "Only review people you have actually worked with. Reviews must be based on real professional experience.",
+      "conduct": "No personal attacks, insults, harassment, or hateful language.",
+      "facts": "Stick to facts. Do not post false or misleading information.",
+      "privacy": "No spam, advertising, or private information such as phone numbers or addresses.",
+      "onePerPerson": "One review per person. You can edit or delete your own review at any time."
+    },
+    "footer": "Reviews that break these rules may be hidden or removed by our moderators."
+  }
+}

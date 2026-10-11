@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Loader2, MailCheck, Star } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useTranslation, Trans } from "react-i18next";
 
 import { safeRedirect } from "@/hooks/useAuthUser";
 import { supabase } from "@/integrations/supabase/client";
@@ -47,6 +48,7 @@ export const Route = createFileRoute("/auth")({
 });
 
 function AuthPage() {
+  const { t } = useTranslation("auth");
   const { mode, redirect } = Route.useSearch();
   const dest = safeRedirect(redirect);
   const [isSignup, setIsSignup] = useState(mode === "signup");
@@ -87,7 +89,7 @@ function AuthPage() {
       }
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Something went wrong",
+        error instanceof Error ? error.message : t("errors.generic"),
       );
     } finally {
       setLoading(false);
@@ -100,7 +102,7 @@ function AuthPage() {
       redirect_uri: window.location.origin + dest,
     });
     if (result.error) {
-      toast.error("Google sign-in failed. Please try again.");
+      toast.error(t("google.failed"));
       setGoogleLoading(false);
       return;
     }
@@ -117,11 +119,14 @@ function AuthPage() {
               <div className="mx-auto mb-2 flex size-12 items-center justify-center rounded-full bg-primary/10">
                 <MailCheck className="size-6 text-primary" />
               </div>
-              <CardTitle>Check your email</CardTitle>
+              <CardTitle>{t("confirmation.title")}</CardTitle>
               <CardDescription>
-                We sent a confirmation link to{" "}
-                <span className="font-medium text-foreground">{email}</span>.
-                Click it to activate your CoWorker account.
+                <Trans
+                  i18nKey="confirmation.description"
+                  t={t}
+                  values={{ email }}
+                  components={{ 1: <span className="font-medium text-foreground" /> }}
+                />
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -133,7 +138,7 @@ function AuthPage() {
                   setIsSignup(false);
                 }}
               >
-                Back to sign in
+                {t("confirmation.backToSignin")}
               </Button>
             </CardContent>
           </>
@@ -144,12 +149,12 @@ function AuthPage() {
                 <Star className="size-5 fill-primary-foreground text-primary-foreground" />
               </div>
               <CardTitle>
-                {isSignup ? "Create your CoWorker profile" : "Welcome back"}
+                {isSignup ? t("title.signup") : t("title.signin")}
               </CardTitle>
               <CardDescription>
                 {isSignup
-                  ? "Join CoWorker to build your professional reputation."
-                  : "Sign in to your CoWorker account."}
+                  ? t("description.signup")
+                  : t("description.signin")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -182,49 +187,49 @@ function AuthPage() {
                     />
                   </svg>
                 )}
-                Continue with Google
+                {t("google.continue")}
               </Button>
 
               <div className="flex items-center gap-3 text-xs text-muted-foreground">
                 <span className="h-px flex-1 bg-border" />
-                or
+                {t("or")}
                 <span className="h-px flex-1 bg-border" />
               </div>
 
               <form onSubmit={handleEmailSubmit} className="space-y-4">
                 {isSignup && (
                   <div className="space-y-2">
-                    <Label htmlFor="fullName">Full name</Label>
+                    <Label htmlFor="fullName">{t("form.fullName.label")}</Label>
                     <Input
                       id="fullName"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      placeholder="Jane Doe"
+                      placeholder={t("form.fullName.placeholder")}
                       required
                       autoComplete="name"
                     />
                   </div>
                 )}
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">{t("form.email.label")}</Label>
                   <Input
                     id="email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@company.com"
+                    placeholder={t("form.email.placeholder")}
                     required
                     autoComplete="email"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password">{t("form.password.label")}</Label>
                   <Input
                     id="password"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
+                    placeholder={t("form.password.placeholder")}
                     required
                     minLength={6}
                     autoComplete={isSignup ? "new-password" : "current-password"}
@@ -232,18 +237,18 @@ function AuthPage() {
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading && <Loader2 className="size-4 animate-spin" />}
-                  {isSignup ? "Join CoWorker" : "Sign in"}
+                  {isSignup ? t("form.submit.signup") : t("form.submit.signin")}
                 </Button>
               </form>
 
               <p className="text-center text-sm text-muted-foreground">
-                {isSignup ? "Already have an account?" : "New to CoWorker?"}{" "}
+                {isSignup ? t("footer.alreadyHaveAccount") : t("footer.newToCoWorker")}{" "}
                 <button
                   type="button"
                   className="font-semibold text-primary hover:underline"
                   onClick={() => setIsSignup(!isSignup)}
                 >
-                  {isSignup ? "Sign in" : "Join now"}
+                  {isSignup ? t("footer.signin") : t("footer.signup")}
                 </button>
               </p>
             </CardContent>

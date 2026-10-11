@@ -5,6 +5,7 @@ import { z } from "zod";
 import { useEffect, useMemo, useState } from "react";
 import { Building2, MapPin, Pencil, X } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -26,6 +27,7 @@ import { LinkedInLink } from "@/components/LinkedInLink";
 import { initials } from "@/components/ProfileCard";
 import { RELATIONSHIPS } from "@/lib/profile-meta";
 import { mentions, profileAttributesQueryOptions, profileLanguagesQueryOptions, profileQueryOptions } from "@/lib/profile-queries";
+import { useFormat } from "@/lib/format";
 
 export const Route = createFileRoute("/profile/$id")({
   validateSearch: zodValidator(z.object({ nav: fallback(z.boolean().optional(), undefined) })),
@@ -46,6 +48,8 @@ const REVIEW_SELECT =
   "id, rating, body, created_at, status, relationship, worked_company, worked_from, worked_to, helpful_count, unhelpful_count, reviewer:profiles!reviews_reviewer_id_fkey(id, full_name, avatar_url), reply:review_replies(body, created_at)";
 
 function ProfilePage() {
+  const { t } = useTranslation(["profile", "common"]);
+  const { number } = useFormat();
   const { id } = Route.useParams();
   const { nav } = Route.useSearch();
   const qc = useQueryClient();
@@ -114,10 +118,10 @@ function ProfilePage() {
     if (res.error) {
       qc.setQueryData(["my-votes", id, myId], prevVotes);
       qc.setQueryData(["reviews", id], prevReviews);
-      toast.error(res.error.message.includes("too fast") ? res.error.message : "Couldn't save your vote.");
+      toast.error(res.error.message.includes("too fast") ? res.error.message : t("profile:vote.error_generic"));
       return;
     }
-    toast.success(v === 0 ? "Vote removed" : "Vote saved", { duration: 2000 });
+    toast.success(v === 0 ? t("profile:vote.removed") : t("profile:vote.saved"), { duration: 2000 });
   }
 
   const reviews = reviewsQ.data ?? [];
@@ -147,8 +151,8 @@ function ProfilePage() {
   if (profileQ.isError) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-20 text-center">
-        <h1 className="text-2xl font-bold">This profile didn't load</h1>
-        <Button className="mt-6" onClick={() => profileQ.refetch()}>Try again</Button>
+        <h1 className="text-2xl font-bold">{t("profile:loading.title")}</h1>
+        <Button className="mt-6" onClick={() => profileQ.refetch()}>{t("common:actions.tryAgain")}</Button>
       </div>
     );
   }
@@ -157,8 +161,8 @@ function ProfilePage() {
   if (!profile) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-20 text-center">
-        <h1 className="text-2xl font-bold">Profile not found</h1>
-        <Button asChild className="mt-6"><Link to="/">Go home</Link></Button>
+        <h1 className="text-2xl font-bold">{t("profile:not_found.title")}</h1>
+        <Button asChild className="mt-6"><Link to="/">{t("profile:not_found.home")}</Link></Button>
       </div>
     );
   }
@@ -173,8 +177,8 @@ function ProfilePage() {
 
   async function backToActive() {
     const { error } = await supabase.from("profiles").update({ status: "active" }).eq("id", profile!.id);
-    if (error) { toast.error("Couldn't update your status."); return; }
-    toast.success("Status changed to Active");
+    if (error) { toast.error(t("profile:active_return.error")); return; }
+    toast.success(t("profile:active_return.success"));
     qc.invalidateQueries({ queryKey: ["profile", profile!.id] });
   }
 
@@ -185,8 +189,8 @@ function ProfilePage() {
       {returnPassed && (
         <Card className="border-warning/50">
           <CardContent className="flex flex-wrap items-center justify-between gap-3 pt-6">
-            <p className="text-sm">Your return date has passed. Are you back?</p>
-            <Button size="sm" onClick={backToActive}>Switch to Active</Button>
+            <p className="text-sm">{t("profile:active_return.title")}</p>
+            <Button size="sm" onClick={backToActive}>{t("profile:active_return.action")}</Button>
           </CardContent>
         </Card>
       )}
@@ -201,7 +205,7 @@ function ProfilePage() {
             </Avatar>
             <div className="space-y-1 pb-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-2xl font-bold">{profile.full_name || "Unnamed professional"}</h1>
+                <h1 className="text-2xl font-bold">{profile.full_name || t("profile:unnamed")}</h1>
                 <StatusBadge status={profile.status} returnDate={profile.status_return_date} />
               </div>
               {profile.headline && <p className="text-foreground/80">{profile.headline}</p>}
@@ -216,7 +220,7 @@ function ProfilePage() {
           </div>
           {isOwner ? (
             <Button variant="outline" asChild>
-              <Link to="/profile/edit"><Pencil className="size-4" />Edit profile</Link>
+              <Link to="/profile/edit"><Pencil className="size-4" />{t("profile:edit")}</Link>
             </Button>
           ) : (
             <div className="flex flex-col items-start gap-1 sm:items-end">
@@ -226,7 +230,7 @@ function ProfilePage() {
               </div>
               {profile.status !== "active" && (
                 <p className="text-xs text-muted-foreground">
-                  This person is currently {profile.status === "on_leave" ? "on leave" : "inactive"} and may reply late.
+                  {t(`profile:status_inactive_note_${profile.status}` as any)}
                 </p>
               )}
             </div>
@@ -239,24 +243,24 @@ function ProfilePage() {
       <Card>
         <CardContent className="grid gap-8 pt-6 sm:grid-cols-[200px_1fr]">
           <div className="flex flex-col items-center justify-center text-center">
-            <div className="text-5xl font-bold">{total ? avg.toFixed(1) : "–"}</div>
+            <div className="text-5xl font-bold">{total ? number(avg, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : "–"}</div>
             <StarRating value={avg} className="mt-2" />
-            <p className="mt-1 text-sm text-muted-foreground">{total} {total === 1 ? "review" : "reviews"}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{t("profile:reviews_count", { count: total })}</p>
           </div>
           <div className="space-y-2">
             {counts.map(({ star, count }) => (
               <div key={star} className="flex items-center gap-3 text-sm">
-                <span className="w-12 text-muted-foreground">{star} star</span>
+                <span className="w-16 shrink-0 whitespace-nowrap text-muted-foreground">{t("profile:star_label", { count: star })}</span>
                 <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-muted">
                   <div className="h-full rounded-full bg-chart-4" style={{ width: `${total ? (count / total) * 100 : 0}%` }} />
                 </div>
-                <span className="w-8 text-right text-muted-foreground">{count}</span>
+                <span className="w-8 text-right text-muted-foreground">{number(count)}</span>
               </div>
             ))}
           </div>
           {(attrsQ.data?.length ?? 0) > 0 && (
             <div className="space-y-2 sm:col-span-2">
-              <p className="text-sm font-semibold">Strengths colleagues mention</p>
+              <p className="text-sm font-semibold">{t("profile:strengths_title")}</p>
               <AttributePills attributes={attrsQ.data!} active={attrFilter} onSelect={(s) => setAttrFilter((cur) => cur === s ? null : s)} />
             </div>
           )}
@@ -273,42 +277,46 @@ function ProfilePage() {
       {!myId && (
         <Card>
           <CardContent className="flex items-center justify-between gap-3 pt-6">
-            <p className="text-sm text-muted-foreground">Worked with this person?</p>
-            <Button asChild size="sm"><Link to="/auth" search={{ redirect: `/profile/${profile.id}` }}>Sign in to write a review</Link></Button>
+            <p className="text-sm text-muted-foreground">{t("profile:worked_with")}</p>
+            <Button asChild size="sm"><Link to="/auth" search={{ redirect: `/profile/${profile.id}` }}>{t("profile:sign_in_to_review")}</Link></Button>
           </CardContent>
         </Card>
       )}
 
       <section className="space-y-3" aria-labelledby="reviews-h">
         <div className="flex flex-wrap items-end justify-between gap-3">
-          <h2 id="reviews-h" className="text-lg font-semibold">Reviews</h2>
+          <h2 id="reviews-h" className="text-lg font-semibold">{t("profile:reviews_heading")}</h2>
           <div className="flex flex-wrap items-center gap-3">
             <Select value={relFilter} onValueChange={setRelFilter}>
-              <SelectTrigger className="h-9 w-40" aria-label="Filter by relationship"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-9 w-full sm:w-48" aria-label={t("profile:filters.relationship_label")}><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All relationships</SelectItem>
-                {RELATIONSHIPS.map((r) => <SelectItem key={r.value} value={r.value}>Only {r.filter.toLowerCase()}</SelectItem>)}
+                <SelectItem value="all">{t("profile:filters.relationship_all")}</SelectItem>
+                {RELATIONSHIPS.map((r) => (
+                  <SelectItem key={r.value} value={r.value}>
+                    {t("profile:filters.relationship_only", { relationship: r.filter })}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <Select value={sort} onValueChange={setSort}>
-              <SelectTrigger className="h-9 w-36" aria-label="Sort reviews"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-9 w-full sm:w-44" aria-label={t("profile:filters.sort_label")}><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="newest">Newest</SelectItem>
-                <SelectItem value="helpful">Most helpful</SelectItem>
-                <SelectItem value="highest">Highest rated</SelectItem>
-                <SelectItem value="lowest">Lowest rated</SelectItem>
+                <SelectItem value="newest">{t("profile:filters.sort_newest")}</SelectItem>
+                <SelectItem value="helpful">{t("profile:filters.sort_helpful")}</SelectItem>
+                <SelectItem value="highest">{t("profile:filters.sort_highest")}</SelectItem>
+                <SelectItem value="lowest">{t("profile:filters.sort_lowest")}</SelectItem>
               </SelectContent>
             </Select>
             <div className="flex items-center gap-2">
               <Switch id="verified-only" checked={verifiedOnly} onCheckedChange={setVerifiedOnly} />
-              <Label htmlFor="verified-only" className="text-sm">Verified colleagues only</Label>
+              <Label htmlFor="verified-only" className="text-sm">{t("profile:filters.verified_only")}</Label>
             </div>
           </div>
         </div>
         {activeAttr && (
           <div className="flex items-center gap-2 text-sm">
-            <span className="text-muted-foreground">Showing reviews mentioning</span>
-            <button onClick={() => setAttrFilter(null)} className="inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-xs font-medium text-primary-foreground" aria-label={`Clear ${activeAttr.label} filter`}>
+            <span className="text-muted-foreground">{t("profile:filters.mentioning")}</span>
+            <button onClick={() => setAttrFilter(null)} className="inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-xs font-medium text-primary-foreground" aria-label={t("profile:filters.clear_filter", { label: activeAttr.label })}>
               {activeAttr.label}<X className="size-3" />
             </button>
           </div>
@@ -316,11 +324,11 @@ function ProfilePage() {
         {reviewsQ.isLoading ? (
           <Skeleton className="h-24 w-full" />
         ) : reviewsQ.isError ? (
-          <Card><CardContent className="py-10 text-center text-destructive">Reviews didn't load. Please refresh.</CardContent></Card>
+          <Card><CardContent className="py-10 text-center text-destructive">{t("profile:reviews_error")}</CardContent></Card>
         ) : total === 0 && listed.length === 0 ? (
-          <Card><CardContent className="py-10 text-center text-muted-foreground">No reviews yet.</CardContent></Card>
+          <Card><CardContent className="py-10 text-center text-muted-foreground">{t("profile:reviews_empty")}</CardContent></Card>
         ) : listed.length === 0 ? (
-          <Card><CardContent className="py-10 text-center text-muted-foreground">No reviews match these filters.</CardContent></Card>
+          <Card><CardContent className="py-10 text-center text-muted-foreground">{t("profile:reviews_no_match")}</CardContent></Card>
         ) : (
           listed.map((r) => (
             <ReviewItem key={r.id} review={r} profileId={profile.id} profileName={profile.full_name} myId={myId}

@@ -1,0 +1,33 @@
+{
+  "present": "Heute",
+  "proficiency": {
+    "basic": "Grundkenntnisse",
+    "conversational": "Konversationssicher",
+    "professional": "Verhandlungssicher",
+    "native": "Muttersprache"
+  },
+  "status": {
+    "active": "Aktiv",
+    "on_leave": "Abwesend",
+    "inactive": "Inaktiv"
+  },
+  "statusHelp": {
+    "active": "Du arbeitest und bist für Nachrichten erreichbar. Wird überall normal angezeigt.",
+    "on_leave": "Vorübergehend abwesend (Elternzeit, Sabbatical…). Du bleibst in der Suche mit einem „Abwesend“-Hinweis.",
+    "inactive": "Derzeit nicht berufstätig. In Suche und Startseiten-Statistik ausgeblendet, dein Profillink funktioniert aber weiter."
+  },
+  "relationship": {
+    "managed": "War ihre Führungskraft",
+    "reported_to": "Hat an sie berichtet",
+    "peer": "Kollege / gleiches Team",
+    "client": "Kunde",
+    "vendor": "Dienstleister"
+  },
+  "relationshipFilter": {
+    "managed": "Führungskräfte",
+    "reported_to": "Mitarbeitende",
+    "peer": "Kollegen",
+    "client": "Kunden",
+    "vendor": "Dienstleister"
+  }
+}

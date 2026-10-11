@@ -18,3 +18,4 @@
 - Profile strengths match review text against attributes.keywords in SQL (text_mentions) and are shown only at >=3 distinct reviews; the client mirror in profile-queries.ts is for highlighting only.
 - Work email codes are created via the service-role-only create_work_email_code RPC from a server function and verified via verify_work_email; why: plaintext codes never reach the browser.
 - Search uses search_profiles_v3 (older versions kept for compatibility); results order is stored in sessionStorage for profile previous/next, enabled by the ?nav=true flag.
+- profiles.linkedin_url is public and maintained only by a trigger from the owner-only profile_linkedin table (null when hidden); why: hidden links never leave the owner's row.

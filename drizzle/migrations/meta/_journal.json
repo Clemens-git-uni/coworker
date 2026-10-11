@@ -78,6 +78,13 @@
       "when": 1791730045270,
       "tag": "0010_replies_follow_review_visibility",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1791735801986,
+      "tag": "0011_linkedin_profile_link",
+      "breakpoints": true
     }
   ]
 }

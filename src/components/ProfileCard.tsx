@@ -3,6 +3,7 @@ import { Building2, MapPin } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { StarRating } from "@/components/StarRating";
+import { LinkedInLink } from "@/components/LinkedInLink";
 import { BookmarkButton } from "@/components/BookmarkButton";
 import { AttributePills, LanguageBadges, StatusBadge } from "@/components/ProfileBadges";
 import type { ProfileAttribute, ProfileLanguage } from "@/lib/profile-meta";
@@ -11,7 +12,7 @@ export interface ProfileSummary {
   id: string; full_name: string; headline: string; company: string; location: string;
   avatar_url: string | null; avg_rating: number | string; review_count: number | string;
   status?: string; status_return_date?: string | null;
-  languages?: unknown; top_attributes?: unknown;
+  languages?: unknown; linkedin_url?: string | null; top_attributes?: unknown;
 }
 
 export function initials(name: string) {
@@ -42,6 +43,7 @@ export function ProfileCard({ p, action, snippet, onOpen, linkSearch }: {
           <div className="flex flex-wrap gap-x-3 text-xs text-muted-foreground">
             {p.company && <span className="flex items-center gap-1"><Building2 className="size-3" />{p.company}</span>}
             {p.location && <span className="flex items-center gap-1"><MapPin className="size-3" />{p.location}</span>}
+            <LinkedInLink url={p.linkedin_url} className="text-xs" />
           </div>
           <div className="flex items-center gap-2 pt-1 text-sm">
             <StarRating value={Number(p.avg_rating)} />

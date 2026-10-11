@@ -21,6 +21,9 @@ export function StatusEditor({ userId, initial }: {
     setStatus(initial.status as ProfileStatus); setReturnDate(initial.status_return_date ?? ""); setNote(initial.status_note);
   }, [initial.status, initial.status_return_date, initial.status_note]);
 
+  const dirty = status !== initial.status ||
+    (status !== "active" && (returnDate !== (initial.status_return_date ?? "") || note.trim() !== initial.status_note.trim()));
+
   async function save() {
     setSaving(true);
     const { error } = await supabase.from("profiles").update({
@@ -59,7 +62,7 @@ export function StatusEditor({ userId, initial }: {
             </div>
           </div>
         )}
-        <div className="flex justify-end"><Button size="sm" onClick={save} disabled={saving}>{saving ? "Saving…" : "Save status"}</Button></div>
+        <div className="flex justify-end"><Button size="sm" onClick={save} disabled={saving || !dirty}>{saving ? "Saving…" : "Save status"}</Button></div>
       </CardContent>
     </Card>
   );

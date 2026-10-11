@@ -250,7 +250,7 @@ function ProfilePage() {
           <div className="space-y-2">
             {counts.map(({ star, count }) => (
               <div key={star} className="flex items-center gap-3 text-sm">
-                <span className="w-12 text-muted-foreground">{t("profile:star_label", { count: star })}</span>
+                <span className="w-16 shrink-0 whitespace-nowrap text-muted-foreground">{t("profile:star_label", { count: star })}</span>
                 <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-muted">
                   <div className="h-full rounded-full bg-chart-4" style={{ width: `${total ? (count / total) * 100 : 0}%` }} />
                 </div>

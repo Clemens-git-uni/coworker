@@ -23,7 +23,7 @@ export function MultiSelectFilter({ label, options, selected, onChange, loading,
     <fieldset className="space-y-2">
       <legend className="text-sm font-semibold">{label}</legend>
       <Input
-        placeholder={t("multiSelect.searchPlaceholder", { label: label.toLowerCase() })}
+        placeholder={t("multiSelect.searchPlaceholder", { label })}
         value={term}
         onChange={(e) => setTerm(e.target.value)}
         aria-label={t("multiSelect.searchAriaLabel", { label })}

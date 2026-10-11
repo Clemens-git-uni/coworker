@@ -174,7 +174,7 @@ function SearchPage() {
         selected={s.positions} onChange={(positions) => update({ positions })} />
       <MultiSelectFilter label={t("filters.company")} options={optionsQ.data?.companies ?? []} loading={optionsQ.isLoading}
         selected={s.companies} onChange={(companies) => update({ companies })} />
-      <MultiSelectFilter label={t("filters.language")} options={LANGUAGES.map((l) => ({ value: l.code, label: l.name, count: 0 }))}
+      <MultiSelectFilter label={t("filters.language")} options={LANGUAGES.map((l) => ({ value: l.code, label: languageName(l.code), count: 0 }))}
         selected={s.languages} onChange={(languages) => update({ languages })} hideCounts />
       {s.languages.length > 0 && (
         <fieldset className="space-y-2">

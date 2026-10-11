@@ -50,7 +50,7 @@ export function ProfileCard({ p, action, snippet, onOpen, linkSearch }: {
             {p.location && <span className="flex items-center gap-1"><MapPin className="size-3" />{p.location}</span>}
             <LinkedInLink url={p.linkedin_url} className="text-xs" />
           </div>
-          <div className="flex items-center gap-2 pt-1 text-sm">
+          <div className="flex flex-wrap items-center gap-x-2 pt-1 text-sm">
             <StarRating value={Number(p.avg_rating)} />
             <span className="font-semibold">{count ? number(Number(p.avg_rating), { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : "–"}</span>
             <span className="text-muted-foreground">({t("reviews_count", { count: count })})</span>

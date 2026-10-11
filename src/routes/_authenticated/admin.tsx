@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -11,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StarRating } from "@/components/StarRating";
 import { reasonLabel } from "@/lib/moderation";
+import { useFormat } from "@/lib/format";
 import { AttributesManager } from "@/components/AttributesManager";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -31,6 +33,8 @@ export const Route = createFileRoute("/_authenticated/admin")({
 type Status = "open" | "resolved" | "dismissed" | "strengths";
 
 function AdminPage() {
+  const { t } = useTranslation("admin");
+  const format = useFormat();
   const { user } = Route.useRouteContext();
   const qc = useQueryClient();
   const [tab, setTab] = useState<Status>("open");
@@ -73,9 +77,9 @@ function AdminPage() {
   if (!roleQ.data) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-20 text-center">
-        <h1 className="text-2xl font-bold">Access denied</h1>
-        <p className="mt-2 text-muted-foreground">This page is only available to moderators.</p>
-        <Button asChild className="mt-6"><Link to="/">Go home</Link></Button>
+        <h1 className="text-2xl font-bold">{t("access_denied")}</h1>
+        <p className="mt-2 text-muted-foreground">{t("access_denied_desc")}</p>
+        <Button asChild className="mt-6"><Link to="/">{t("go_home")}</Link></Button>
       </div>
     );
   }
@@ -84,13 +88,13 @@ function AdminPage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-6 px-4 py-8">
-      <h1 className="text-2xl font-bold">Moderation dashboard</h1>
+      <h1 className="text-2xl font-bold">{t("title")}</h1>
       <Tabs value={tab} onValueChange={(v) => setTab(v as Status)}>
         <TabsList>
-          <TabsTrigger value="open">Open</TabsTrigger>
-          <TabsTrigger value="resolved">Resolved</TabsTrigger>
-          <TabsTrigger value="dismissed">Dismissed</TabsTrigger>
-          <TabsTrigger value="strengths">Strengths</TabsTrigger>
+          <TabsTrigger value="open">{t("tabs.open")}</TabsTrigger>
+          <TabsTrigger value="resolved">{t("tabs.resolved")}</TabsTrigger>
+          <TabsTrigger value="dismissed">{t("tabs.dismissed")}</TabsTrigger>
+          <TabsTrigger value="strengths">{t("tabs.strengths")}</TabsTrigger>
         </TabsList>
       </Tabs>
 
@@ -99,15 +103,15 @@ function AdminPage() {
       ) : reportsQ.isLoading ? (
         <Skeleton className="h-32" />
       ) : reports.length === 0 ? (
-        <Card><CardContent className="py-10 text-center text-muted-foreground">No {tab} reports.</CardContent></Card>
+        <Card><CardContent className="py-10 text-center text-muted-foreground">{t("no_reports", { status: t(`tabs.${tab}`) })}</CardContent></Card>
       ) : (
         reports.map((r) => (
           <Card key={r.id}>
             <CardContent className="space-y-3 pt-6">
               <div className="flex flex-wrap items-center gap-2 text-sm">
-                <Badge variant="destructive">{reasonLabel(r.reason)}</Badge>
+                <Badge variant="destructive">{t(`reasons.${r.reason}`) || r.reason}</Badge>
                 <span className="text-muted-foreground">
-                  reported by {r.reporter?.full_name || "a user"} · {new Date(r.created_at).toLocaleString()}
+                  {t("reported_by", { name: r.reporter?.full_name || t("reported_by_user"), date: format.date(r.created_at, { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) })}
                 </span>
               </div>
               {r.details && <p className="text-sm italic text-foreground/80">“{r.details}”</p>}
@@ -115,17 +119,17 @@ function AdminPage() {
                 <div className="rounded-md border bg-muted/40 p-3">
                   <div className="flex flex-wrap items-center gap-2 text-sm">
                     <StarRating value={r.review.rating} />
-                    <span className="font-semibold">{r.review.reviewer?.full_name || "Anonymous"}</span>
-                    <span className="text-muted-foreground">on</span>
+                    <span className="font-semibold">{r.review.reviewer?.full_name || t("anonymous")}</span>
+                    <span className="text-muted-foreground">{t("on")}</span>
                     <Link to="/profile/$id" params={{ id: r.review.profile_id }} className="font-semibold text-primary hover:underline">
-                      {r.review.subject?.full_name || "profile"}
+                      {r.review.subject?.full_name || t("profile")}
                     </Link>
-                    {r.review.status === "hidden" && <Badge variant="secondary">Hidden</Badge>}
+                    {r.review.status === "hidden" && <Badge variant="secondary">{t("hidden_badge")}</Badge>}
                   </div>
                   <p className="mt-2 text-sm">{r.review.body}</p>
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground">The review has been removed.</p>
+                <p className="text-sm text-muted-foreground">{t("review_removed")}</p>
               )}
               <div className="flex flex-wrap justify-end gap-2">
                 {r.review && (
@@ -134,23 +138,23 @@ function AdminPage() {
                       const res = await supabase.from("reviews").update({ status: "hidden" }).eq("id", r.review!.id);
                       if (!res.error) await setReport(r.id, "resolved");
                       return res;
-                    }, "Review hidden")}>Hide review</Button>
+                    }, t("toast.review_hidden"))}>{t("hide_review")}</Button>
                   ) : (
                     <Button size="sm" variant="outline" onClick={() => act(() =>
-                      supabase.from("reviews").update({ status: "visible" }).eq("id", r.review!.id), "Review restored")}>
-                      Unhide
+                      supabase.from("reviews").update({ status: "visible" }).eq("id", r.review!.id), t("toast.review_restored"))}>
+                      {t("unhide")}
                     </Button>
                   )
                 )}
                 {r.review && (
                   <Button size="sm" variant="destructive" onClick={() => {
-                    if (!confirm("Permanently remove this review?")) return;
-                    act(() => supabase.from("reviews").delete().eq("id", r.review!.id), "Review removed");
-                  }}>Remove review</Button>
+                    if (!confirm(t("confirm_remove"))) return;
+                    act(() => supabase.from("reviews").delete().eq("id", r.review!.id), t("toast.review_removed"));
+                  }}>{t("remove_review")}</Button>
                 )}
                 {r.status === "open" && (
-                  <Button size="sm" variant="ghost" onClick={() => act(() => setReport(r.id, "dismissed"), "Report dismissed")}>
-                    Dismiss
+                  <Button size="sm" variant="ghost" onClick={() => act(() => setReport(r.id, "dismissed"), t("toast.report_dismissed"))}>
+                    {t("dismiss")}
                   </Button>
                 )}
               </div>

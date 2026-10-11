@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Linkedin } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { normalizeLinkedIn } from "@/lib/linkedin";
 
 export function LinkedInSettings({ userId }: { userId: string }) {
+  const { t } = useTranslation("settings");
   const qc = useQueryClient();
   const { data, isLoading } = useQuery({
     queryKey: ["my-linkedin", userId],
@@ -27,7 +29,7 @@ export function LinkedInSettings({ userId }: { userId: string }) {
   useEffect(() => { setUrl(data?.url ?? ""); setIsPublic(data?.is_public ?? true); }, [data]);
 
   const normalized = normalizeLinkedIn(url);
-  const error = url.trim() && !normalized ? "Use a profile link like linkedin.com/in/your-name" : "";
+  const error = url.trim() && !normalized ? t("linkedin.url.error") : "";
   const dirty = (normalized ?? url.trim()) !== (data?.url ?? "") || isPublic !== (data?.is_public ?? true);
 
   async function refresh() {
@@ -42,7 +44,7 @@ export function LinkedInSettings({ userId }: { userId: string }) {
     setBusy(false);
     if (error) { toast.error(error.message); return; }
     setUrl(normalized);
-    toast.success("LinkedIn link saved");
+    toast.success(t("linkedin.success.saved"));
     await refresh();
   }
 
@@ -51,29 +53,29 @@ export function LinkedInSettings({ userId }: { userId: string }) {
     const { error } = await supabase.from("profile_linkedin").delete().eq("profile_id", userId);
     setBusy(false);
     if (error) { toast.error(error.message); return; }
-    toast.success("LinkedIn link removed");
+    toast.success(t("linkedin.success.removed"));
     await refresh();
   }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2"><Linkedin className="size-5 text-primary" />LinkedIn</CardTitle>
-        <CardDescription>Add a link to your LinkedIn profile. We only store the link — nothing is imported from LinkedIn.</CardDescription>
+        <CardTitle className="flex items-center gap-2"><Linkedin className="size-5 text-primary" />{t("linkedin.title")}</CardTitle>
+        <CardDescription>{t("linkedin.description")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-1.5">
-          <Label htmlFor="li-url">Profile link</Label>
-          <Input id="li-url" value={url} disabled={isLoading} placeholder="linkedin.com/in/your-name" onChange={(e) => setUrl(e.target.value)} aria-invalid={!!error} />
+          <Label htmlFor="li-url">{t("linkedin.url.label")}</Label>
+          <Input id="li-url" value={url} disabled={isLoading} placeholder={t("linkedin.url.placeholder")} onChange={(e) => setUrl(e.target.value)} aria-invalid={!!error} />
           {error && <p className="text-xs text-destructive" role="alert">{error}</p>}
         </div>
         <label className="flex items-center justify-between gap-3 text-sm">
-          <span>Show the link on my public profile</span>
+          <span>{t("linkedin.public.label")}</span>
           <Switch checked={isPublic} onCheckedChange={setIsPublic} />
         </label>
         <div className="flex flex-wrap justify-end gap-2">
-          {data && <Button variant="ghost" size="sm" className="text-destructive" onClick={remove} disabled={busy}>Remove link</Button>}
-          <Button size="sm" onClick={save} disabled={busy || !normalized || !dirty}>{busy ? "Saving…" : "Save LinkedIn"}</Button>
+          {data && <Button variant="ghost" size="sm" className="text-destructive" onClick={remove} disabled={busy}>{t("linkedin.remove")}</Button>}
+          <Button size="sm" onClick={save} disabled={busy || !normalized || !dirty}>{busy ? t("linkedin.saving") : t("linkedin.save")}</Button>
         </div>
       </CardContent>
     </Card>

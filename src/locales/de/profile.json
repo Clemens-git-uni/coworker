@@ -1,0 +1,109 @@
+{
+  "unnamed": "Unbekannt",
+  "loading": {
+    "title": "Dieses Profil konnte nicht geladen werden",
+    "retry": "Erneut versuchen"
+  },
+  "not_found": {
+    "title": "Profil nicht gefunden",
+    "home": "Zur Startseite"
+  },
+  "active_return": {
+    "title": "Dein Rückkehrdatum ist verstrichen. Bist du wieder da?",
+    "action": "Auf Aktiv setzen",
+    "success": "Status auf Aktiv geändert",
+    "error": "Status konnte nicht aktualisiert werden."
+  },
+  "edit": "Profil bearbeiten",
+  "status_inactive_note_on_leave": "Diese Person ist zurzeit abwesend und antwortet möglicherweise verzögert.",
+  "status_inactive_note_inactive": "Diese Person ist zurzeit inaktiv und antwortet möglicherweise verzögert.",
+  "reviews_count_one": "{{count}} Bewertung",
+  "reviews_count_other": "{{count}} Bewertungen",
+  "star_label_one": "{{count}} Stern",
+  "star_label_other": "{{count}} Sterne",
+  "strengths_title": "Stärken, die Kollegen erwähnen",
+  "worked_with": "Hast du mit dieser Person zusammengearbeitet?",
+  "sign_in_to_review": "Melde dich an, um eine Bewertung zu schreiben",
+  "reviews_heading": "Bewertungen",
+  "filters": {
+    "relationship_label": "Nach Beziehung filtern",
+    "relationship_all": "Alle Beziehungen",
+    "relationship_only": "Nur {{relationship}}",
+    "sort_label": "Bewertungen sortieren",
+    "sort_newest": "Neueste",
+    "sort_helpful": "Hilfreichste",
+    "sort_highest": "Beste Bewertung",
+    "sort_lowest": "Schlechteste Bewertung",
+    "verified_only": "Nur verifizierte Kollegen",
+    "mentioning": "Bewertungen mit Fokus auf",
+    "clear_filter": "Filter {{label}} löschen"
+  },
+  "reviews_error": "Bewertungen konnten nicht geladen werden. Bitte lade die Seite neu.",
+  "reviews_empty": "Noch keine Bewertungen.",
+  "reviews_no_match": "Keine Bewertungen entsprechen diesen Filtern.",
+  "vote": {
+    "error_generic": "Deine Stimme konnte nicht gespeichert werden.",
+    "saved": "Stimme gespeichert",
+    "removed": "Stimme entfernt"
+  },
+  "nav": {
+    "aria": "Navigation der Suchergebnisse",
+    "back": "Zurück zu den Ergebnissen",
+    "prev": "Zurück",
+    "prev_aria": "Vorheriges Profil",
+    "next": "Weiter",
+    "next_aria": "Nächstes Profil",
+    "counter": "{{current}} von {{total}}"
+  },
+  "bookmark": {
+    "sign_in": "Melde dich an, um Profile zu speichern",
+    "remove_aria": "{{name}} aus Gespeichert entfernen",
+    "save_aria": "{{name}} speichern",
+    "saved": "Gespeichert",
+    "save": "Speichern"
+  },
+  "message": {
+    "sign_in": "Melde dich an, um Nachrichten zu senden",
+    "error": "Die Konversation konnte nicht geöffnet werden. Bitte versuche es erneut.",
+    "action": "Nachricht"
+  },
+  "share": {
+    "title": "Frag Kollegen nach Bewertungen",
+    "description": "Teile deinen persönlichen Link – er führt direkt zum Bewertungsformular.",
+    "copy": "Link kopieren",
+    "copy_success": "Bewertungslink kopiert",
+    "copy_error": "Kopieren fehlgeschlagen. Bitte kopiere den Link manuell: {{url}}",
+    "share_btn": "Teilen",
+    "share_title": "{{name}} auf CoWorker bewerten",
+    "share_text": "Zusammengearbeitet? Hinterlasse mir eine kurze Bewertung auf CoWorker.",
+    "share_error": "Teilen fehlgeschlagen",
+    "qr_aria": "QR-Code anzeigen",
+    "qr_dialog_title": "Dein Bewertungs-QR-Code",
+    "qr_dialog_description": "Scannen, um deinen Bewertungslink zu öffnen."
+  },
+  "linkedin": {
+    "aria": "Auf LinkedIn ansehen",
+    "label": "Auf LinkedIn ansehen"
+  },
+  "review_link": {
+    "invalid_title": "Dieser Bewertungslink ist ungültig",
+    "invalid_desc": "Er wurde möglicherweise durch einen neuen ersetzt. Frage die Person nach ihrem aktuellen Link.",
+    "find_professionals": "Experten finden",
+    "question": "Wie war die Zusammenarbeit mit {{name}}?",
+    "question_default": "dieser Person",
+    "sign_in_title": "Melde dich an, um eine Bewertung abzugeben",
+    "sign_in_desc": "Bewertungen sind mit echten Konten verknüpft, um Vertrauenswürdigkeit zu gewährleisten. Du kehrst danach direkt hierher zurück.",
+    "create_account": "Konto erstellen",
+    "sign_in_btn": "Anmelden",
+    "own_link_note": "Dies ist dein eigener Bewertungslink – teile ihn mit Kollegen. Du kannst dich nicht selbst bewerten.",
+    "view_profile": "Vollständiges Profil ansehen"
+  },
+  "status": {
+    "on_leave": "Abwesend",
+    "inactive": "Inaktiv",
+    "back_at": "zurück am {{date}}",
+    "back_separator": " · "
+  },
+  "languages_more": "+{{count}}",
+  "rating_aria": "{{value}} von 5 Sternen"
+}

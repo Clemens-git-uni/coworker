@@ -1,0 +1,52 @@
+{
+  "title": "Moderations-Dashboard",
+  "access_denied": "Zugriff verweigert",
+  "access_denied_desc": "Diese Seite ist nur für Moderatoren zugänglich.",
+  "go_home": "Zur Startseite",
+  "tabs": {
+    "open": "Offen",
+    "resolved": "Gelöst",
+    "dismissed": "Verworfen",
+    "strengths": "Stärken"
+  },
+  "no_reports": "Keine {{status}} Meldungen.",
+  "reported_by": "gemeldet von {{name}} · {{date}}",
+  "reported_by_user": "einem Nutzer",
+  "anonymous": "Anonym",
+  "on": "bei",
+  "profile": "Profil",
+  "hidden_badge": "Verborgen",
+  "review_removed": "Die Bewertung wurde entfernt.",
+  "hide_review": "Bewertung verbergen",
+  "unhide": "Einblenden",
+  "remove_review": "Bewertung löschen",
+  "dismiss": "Verwerfen",
+  "confirm_remove": "Diese Bewertung endgültig löschen?",
+  "toast": {
+    "review_hidden": "Bewertung verborgen",
+    "review_restored": "Bewertung wiederhergestellt",
+    "review_removed": "Bewertung entfernt",
+    "report_dismissed": "Meldung verworfen"
+  },
+  "strengths_info": "Eine Stärke erscheint in einem Profil, sobald 3 verschiedene Bewertungen eine ihrer Phrasen enthalten (ganze Wörter, beliebige Groß-/Kleinschreibung).",
+  "strengths_error": "Stärken konnten nicht geladen werden.",
+  "new_strength_placeholder": "Neue Stärke, z. B. Verhandlungsführer",
+  "new_strength_aria": "Bezeichnung der neuen Stärke",
+  "add": "Hinzufügen",
+  "attr_label_aria": "Bezeichnung",
+  "attr_keywords_aria": "Schlagwörter für {{name}}",
+  "attr_keywords_placeholder": "Komma, getrennte, Ausdrücke",
+  "save": "Speichern",
+  "delete_aria": "{{name}} löschen",
+  "confirm_delete": \"{{name}}\" löschen?",
+  "toast_saved": \"{{name}}\" gespeichert — Profile wurden neu berechnet",
+  "toast_deleted": "Stärke gelöscht",
+  "toast_added": "Stärke hinzugefügt",
+  "toast_exists": "Diese Stärke existiert bereits.",
+  "reasons": {
+    "harassment": "Belästigung",
+    "false_information": "Falschinformationen",
+    "spam": "Spam",
+    "other": "Sonstiges"
+  }
+}

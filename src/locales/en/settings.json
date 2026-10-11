@@ -1,0 +1,123 @@
+{
+  "profile": {
+    "editTitle": "Edit profile",
+    "fullName": "Full name",
+    "headline": {
+      "label": "Headline",
+      "placeholder": "e.g. Senior Product Designer"
+    },
+    "company": "Company",
+    "location": {
+      "label": "Location",
+      "placeholder": "e.g. Vienna, Austria"
+    },
+    "avatarUrl": {
+      "label": "Photo URL",
+      "placeholder": "https://…"
+    },
+    "saveChanges": "Save changes",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "success": "Profile updated",
+    "error": {
+      "nameRequired": "Name is required",
+      "nameMax": "Name must be 100 characters or less",
+      "headlineMax": "Headline must be 120 characters or less",
+      "companyMax": "Company must be 100 characters or less",
+      "locationMax": "Location must be 100 characters or less",
+      "photoUrl": "Photo must be a valid URL",
+      "photoMax": "URL must be 500 characters or less",
+      "invalid": "Invalid input"
+    },
+    "meta": {
+      "title": "Edit your profile — CoWorker",
+      "description": "Update your name, headline, company, location and photo.",
+      "ogTitle": "Edit your profile — CoWorker",
+      "ogDescription": "Update your CoWorker professional profile."
+    }
+  },
+  "languages": {
+    "title": "Languages",
+    "description": "Add the languages you work in and how well you speak them.",
+    "empty": "No languages added yet.",
+    "add": "Add language",
+    "search": "Search languages…",
+    "notFound": "No language found.",
+    "save": "Save languages",
+    "saving": "Saving…",
+    "success": "Languages saved",
+    "error": "Couldn't save languages.",
+    "removeAria": "Remove {{language}}",
+    "proficiencyAria": "{{language}} proficiency"
+  },
+  "linkedin": {
+    "title": "LinkedIn",
+    "description": "Add a link to your LinkedIn profile. We only store the link — nothing is imported from LinkedIn.",
+    "url": {
+      "label": "Profile link",
+      "placeholder": "linkedin.com/in/your-name",
+      "error": "Use a profile link like linkedin.com/in/your-name"
+    },
+    "public": {
+      "label": "Show the link on my public profile"
+    },
+    "remove": "Remove link",
+    "save": "Save LinkedIn",
+    "saving": "Saving…",
+    "success": {
+      "saved": "LinkedIn link saved",
+      "removed": "LinkedIn link removed"
+    }
+  },
+  "reviewLink": {
+    "title": "Your review link",
+    "description": "A private link that takes colleagues straight to your review form.",
+    "regenerate": "Regenerate link",
+    "confirmRegenerate": "Create a new review link? Your old link will stop working.",
+    "success": "New review link created",
+    "error": "Couldn't create a new link."
+  },
+  "status": {
+    "title": "Availability status",
+    "description": "Let people know if you're away. Your reviews always stay visible.",
+    "returnDate": "Return date (optional)",
+    "note": {
+      "label": "Short note (optional)",
+      "placeholder": "e.g. On parental leave until spring"
+    },
+    "save": "Save status",
+    "saving": "Saving…",
+    "success": "Status changed to {{status}}",
+    "error": "Couldn't update your status."
+  },
+  "workEmail": {
+    "title": "Verified work email",
+    "description": "When you and a reviewer both verify an email at the same company, their review gets a \"Verified colleague\" badge. Only the company domain is used — your email is never shown.",
+    "verifiedAt": "Verified at {{domain}}",
+    "removeAria": "Remove {{domain}}",
+    "email": {
+      "label": "Work email",
+      "placeholder": "you@company.com"
+    },
+    "sendCode": "Send code",
+    "sending": "Sending…",
+    "code": {
+      "label": "6-digit code sent to {{email}}"
+    },
+    "verify": "Verify",
+    "changeEmail": "Change email",
+    "help": "Free email providers (Gmail, Outlook, Yahoo, iCloud, GMX…) can't be used.",
+    "success": {
+      "sent": "Code sent — check your work inbox",
+      "verified": "Work email verified at {{domain}}",
+      "removed": "Work email removed"
+    },
+    "error": {
+      "invalid": "Please enter a valid work email.",
+      "generic": "Couldn't remove it."
+    },
+    "warning": {
+      "notSent": "Your code was created, but email sending isn't switched on yet, so it can't be delivered."
+    }
+  }
+}

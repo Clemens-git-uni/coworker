@@ -1,0 +1,83 @@
+{
+  "form": {
+    "title_new": "Bewertung schreiben",
+    "title_edit": "Bewertung bearbeiten",
+    "reviewed_already": "Du hast diese Person bereits bewertet.",
+    "edit_button": "Bewertung bearbeiten",
+    "delete_button": "Löschen",
+    "verify_email_notice": "Bitte bestätige deine E-Mail-Adresse (überprüfe deinen Posteingang auf den Bestätigungslink), bevor du Bewertungen schreibst.",
+    "star_rating_label": "Sternebewertung",
+    "stars_one": "{{count}} Stern",
+    "stars_other": "{{count}} Sterne",
+    "select_rating": "Wähle eine Bewertung",
+    "rating_of_five": "{{rating}} von 5",
+    "relationship_label": "Wie habt ihr zusammengearbeitet? *",
+    "relationship_placeholder": "Beziehung auswählen",
+    "company_label": "Unternehmen *",
+    "company_placeholder": "Wo ihr zusammengearbeitet habt",
+    "from_label": "Von *",
+    "to_label": "Bis *",
+    "present_label": "Arbeite dort noch (Heute)",
+    "body_placeholder": "Beschreibe, wie es ist, mit dieser Person zu arbeiten…",
+    "body_aria_label": "Bewertungstext",
+    "abusive_notice": "Bitte entferne beleidigende Sprache — siehe unsere Bewertungsrichtlinien.",
+    "guidelines_notice": "Ich bestätige, dass diese Bewertung auf echter beruflicher Erfahrung basiert und den <0>Bewertungsrichtlinien</0> sowie den <1>Nutzungsbedingungen</1> entspricht.",
+    "change_to_save": "Ändere ein Feld zum Speichern.",
+    "save_button": "Bewertung speichern",
+    "post_button": "Bewertung posten",
+    "delete_confirm": "Möchtest du deine Bewertung wirklich löschen?",
+    "validation": {
+      "rating": "Bitte wähle eine Sternebewertung.",
+      "relationship": "Bitte wähle aus, wie ihr zusammengearbeitet habt.",
+      "company": "Bitte gib das Unternehmen an, in dem ihr zusammengearbeitet habt.",
+      "from": "Bitte gib an, wann ihr angefangen habt zusammenzuarbeiten.",
+      "future_date": "Der Start kann nicht in der Zukunft liegen.",
+      "date_order": "Das Ende kann nicht vor dem Start liegen.",
+      "to_date": "Bitte gib ein Enddatum an oder markiere 'Heute'.",
+      "empty_body": "Bitte schreibe deine Bewertung.",
+      "too_long": "Bewertungen dürfen höchstens {{max}} Zeichen lang sein."
+    },
+    "toasts": {
+      "already_reviewed": "Du hast diese Person bereits bewertet.",
+      "updated": "Bewertung aktualisiert",
+      "posted": "Bewertung gepostet",
+      "deleted": "Bewertung gelöscht"
+    }
+  },
+  "item": {
+    "anonymous": "Anonym",
+    "verified_colleague": "Verifizierte Kollegen",
+    "verified_colleague_tooltip": "Beide Personen haben eine geschäftliche E-Mail-Adresse bei diesem Unternehmen verifiziert.",
+    "hidden_notice": "Diese Bewertung wurde von einem Moderator verborgen und ist nur für dich sichtbar.",
+    "unhelpful_flag": "Von der Community als nicht hilfreich markiert",
+    "reply_from": "Antwort von {{name}}",
+    "professional": "dem Professional",
+    "reply_placeholder": "Schreibe eine öffentliche Antwort (du kannst nur einmal antworten)…",
+    "reply_abusive": "Bitte entferne beleidigende Sprache.",
+    "reply_button": "Antwort posten",
+    "helpful": "Hilfreich",
+    "not_helpful": "Nicht hilfreich",
+    "helpful_count_one": "{{count}} Person fand dies hilfreich",
+    "helpful_count_other": "{{count}} Personen fanden dies hilfreich",
+    "reply_action": "Antworten",
+    "report_action": "Melden",
+    "report_dialog": {
+      "title": "Bewertung melden",
+      "description": "Sag uns, warum diese Bewertung gegen unsere Richtlinien verstößt.",
+      "details_placeholder": "Zusätzliche Details (optional)",
+      "submit": "Meldung absenden"
+    },
+    "toasts": {
+      "already_reported": "Du hast diese Bewertung bereits gemeldet.",
+      "already_replied": "Du hast bereits auf diese Bewertung geantwortet.",
+      "report_submitted": "Vielen Dank — unsere Moderatoren werden sich das ansehen.",
+      "reply_posted": "Antwort gepostet"
+    }
+  },
+  "reasons": {
+    "harassment": "Belästigung",
+    "false_information": "Falschinformationen",
+    "spam": "Spam",
+    "other": "Sonstiges"
+  }
+}

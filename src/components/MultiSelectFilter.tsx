@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Check } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
@@ -9,6 +10,7 @@ export interface FilterOption { value: string; count: number; label?: string }
 export function MultiSelectFilter({ label, options, selected, onChange, loading, hideCounts }: {
   label: string; options: FilterOption[]; selected: string[]; onChange: (next: string[]) => void; loading?: boolean; hideCounts?: boolean;
 }) {
+  const { t } = useTranslation("search");
   const [term, setTerm] = useState("");
   const shown = options.filter((o) => (o.label ?? o.value).toLowerCase().includes(term.toLowerCase())).slice(0, 50);
   const id = label.toLowerCase().replace(/\W+/g, "-");
@@ -20,10 +22,16 @@ export function MultiSelectFilter({ label, options, selected, onChange, loading,
   return (
     <fieldset className="space-y-2">
       <legend className="text-sm font-semibold">{label}</legend>
-      <Input placeholder={`Search ${label.toLowerCase()}…`} value={term} onChange={(e) => setTerm(e.target.value)} aria-label={`Search ${label}`} className="h-8" />
+      <Input
+        placeholder={t("multiSelect.searchPlaceholder", { label: label.toLowerCase() })}
+        value={term}
+        onChange={(e) => setTerm(e.target.value)}
+        aria-label={t("multiSelect.searchAriaLabel", { label })}
+        className="h-8"
+      />
       <div role="group" aria-labelledby={id} className="max-h-48 space-y-0.5 overflow-y-auto">
-        {loading ? <p className="py-2 text-xs text-muted-foreground">Loading…</p>
-          : shown.length === 0 ? <p className="py-2 text-xs text-muted-foreground">No matches</p>
+        {loading ? <p className="py-2 text-xs text-muted-foreground">{t("multiSelect.loading")}</p>
+          : shown.length === 0 ? <p className="py-2 text-xs text-muted-foreground">{t("multiSelect.noMatches")}</p>
           : shown.map((o) => {
             const on = selected.includes(o.value);
             return (

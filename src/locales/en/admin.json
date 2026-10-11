@@ -1,0 +1,52 @@
+{
+  "title": "Moderation dashboard",
+  "access_denied": "Access denied",
+  "access_denied_desc": "This page is only available to moderators.",
+  "go_home": "Go home",
+  "tabs": {
+    "open": "Open",
+    "resolved": "Resolved",
+    "dismissed": "Dismissed",
+    "strengths": "Strengths"
+  },
+  "no_reports": "No {{status}} reports.",
+  "reported_by": "reported by {{name}} · {{date}}",
+  "reported_by_user": "a user",
+  "anonymous": "Anonymous",
+  "on": "on",
+  "profile": "profile",
+  "hidden_badge": "Hidden",
+  "review_removed": "The review has been removed.",
+  "hide_review": "Hide review",
+  "unhide": "Unhide",
+  "remove_review": "Remove review",
+  "dismiss": "Dismiss",
+  "confirm_remove": "Permanently remove this review?",
+  "toast": {
+    "review_hidden": "Review hidden",
+    "review_restored": "Review restored",
+    "review_removed": "Review removed",
+    "report_dismissed": "Report dismissed"
+  },
+  "strengths_info": "A strength appears on a profile once 3 different reviews contain one of its phrases (whole words, any capitalization).",
+  "strengths_error": "Couldn't load strengths.",
+  "new_strength_placeholder": "New strength, e.g. Negotiator",
+  "new_strength_aria": "New strength label",
+  "add": "Add",
+  "attr_label_aria": "Label",
+  "attr_keywords_aria": "Keywords for {{name}}",
+  "attr_keywords_placeholder": "comma, separated, phrases",
+  "save": "Save",
+  "delete_aria": "Delete {{name}}",
+  "confirm_delete": "Delete \"{{name}}\"?",
+  "toast_saved": \"{{name}}\" saved — profiles recalculated",
+  "toast_deleted": "Strength deleted",
+  "toast_added": "Strength added",
+  "toast_exists": "That strength already exists.",
+  "reasons": {
+    "harassment": "Harassment",
+    "false_information": "False information",
+    "spam": "Spam",
+    "other": "Other"
+  }
+}

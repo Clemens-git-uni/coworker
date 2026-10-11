@@ -4,6 +4,7 @@ import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Search, SlidersHorizontal, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +20,7 @@ import { MultiSelectFilter, type FilterOption } from "@/components/MultiSelectFi
 import { Switch } from "@/components/ui/switch";
 import { LANGUAGES, PROFICIENCIES, languageName, proficiencyLabel } from "@/lib/profile-meta";
 import { saveResultsNav, takeScrollRestore } from "@/lib/results-nav";
+import { useFormat } from "@/lib/format";
 
 const PAGE_SIZE = 12;
 const REVIEW_PRESETS = [0, 1, 5, 10, 25, 50];
@@ -55,6 +57,8 @@ export const Route = createFileRoute("/search")({
 });
 
 function SearchPage() {
+  const { t } = useTranslation("search");
+  const format = useFormat();
   const s = Route.useSearch();
   const navigate = useNavigate({ from: "/search" });
   const sort = ["rating", "reviews", "newest"].includes(s.sort) ? s.sort : "rating";
@@ -118,7 +122,6 @@ function SearchPage() {
     },
   });
 
-  // Full ordered id list (lightweight) so profile pages can offer previous/next.
   const idsQ = useQuery({
     queryKey: ["search-ids", filterKey],
     queryFn: async () => {
@@ -149,103 +152,108 @@ function SearchPage() {
 
   const chips: { label: string; remove: () => void }[] = [
     ...(s.q ? [{ label: `“${s.q}”`, remove: () => update({ q: "" }) }] : []),
-    ...(s.location ? [{ label: `Location: ${s.location}`, remove: () => update({ location: "" }) }] : []),
-    ...(minRating ? [{ label: `${minRating}+ stars`, remove: () => update({ minRating: 0 }) }] : []),
-    ...(minReviews ? [{ label: `${minReviews}+ reviews`, remove: () => update({ minReviews: 0 }) }] : []),
+    ...(s.location ? [{ label: t("filters.chips.location", { location: s.location }), remove: () => update({ location: "" }) }] : []),
+    ...(minRating ? [{ label: t("filters.chips.stars", { count: minRating }), remove: () => update({ minRating: 0 }) }] : []),
+    ...(minReviews ? [{ label: t("filters.chips.reviews", { count: minReviews }), remove: () => update({ minReviews: 0 }) }] : []),
     ...s.positions.map((p) => ({ label: p, remove: () => update({ positions: s.positions.filter((x) => x !== p) }) })),
     ...s.companies.map((c) => ({ label: c, remove: () => update({ companies: s.companies.filter((x) => x !== c) }) })),
-    ...s.languages.map((l) => ({ label: `${languageName(l)}${minProficiency ? ` (${proficiencyLabel(minProficiency)}+)` : ""}`, remove: () => update({ languages: s.languages.filter((x) => x !== l) }) })),
+    ...s.languages.map((l) => ({
+      label: minProficiency
+        ? t("filters.chips.languageWithProficiency", { language: languageName(l), proficiency: proficiencyLabel(minProficiency) })
+        : languageName(l),
+      remove: () => update({ languages: s.languages.filter((x) => x !== l) })
+    })),
     ...s.attributes.map((a) => ({ label: attrLabel(a), remove: () => update({ attributes: s.attributes.filter((x) => x !== a) }) })),
-    ...(s.showInactive ? [{ label: "Including inactive", remove: () => update({ showInactive: false }) }] : []),
+    ...(s.showInactive ? [{ label: t("filters.chips.includingInactive"), remove: () => update({ showInactive: false }) }] : []),
   ];
   const clearAll = () => navigate({ search: { sort } as SearchParams });
 
   const panel = (
     <div className="space-y-6">
-      <MultiSelectFilter label="Position / expertise" options={optionsQ.data?.positions ?? []} loading={optionsQ.isLoading}
+      <MultiSelectFilter label={t("filters.position")} options={optionsQ.data?.positions ?? []} loading={optionsQ.isLoading}
         selected={s.positions} onChange={(positions) => update({ positions })} />
-      <MultiSelectFilter label="Company" options={optionsQ.data?.companies ?? []} loading={optionsQ.isLoading}
+      <MultiSelectFilter label={t("filters.company")} options={optionsQ.data?.companies ?? []} loading={optionsQ.isLoading}
         selected={s.companies} onChange={(companies) => update({ companies })} />
-      <MultiSelectFilter label="Language" options={LANGUAGES.map((l) => ({ value: l.code, label: l.name, count: 0 }))}
+      <MultiSelectFilter label={t("filters.language")} options={LANGUAGES.map((l) => ({ value: l.code, label: l.name, count: 0 }))}
         selected={s.languages} onChange={(languages) => update({ languages })} hideCounts />
       {s.languages.length > 0 && (
         <fieldset className="space-y-2">
-          <legend className="text-sm font-semibold">Minimum proficiency</legend>
+          <legend className="text-sm font-semibold">{t("filters.minProficiency")}</legend>
           <Select value={minProficiency || "any"} onValueChange={(v) => update({ minProficiency: v === "any" ? "" : v })}>
-            <SelectTrigger aria-label="Minimum proficiency"><SelectValue /></SelectTrigger>
+            <SelectTrigger aria-label={t("filters.minProficiency")}><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="any">Any level</SelectItem>
+              <SelectItem value="any">{t("filters.anyLevel")}</SelectItem>
               {PROFICIENCIES.map((p) => <SelectItem key={p.value} value={p.value}>{p.label}+</SelectItem>)}
             </SelectContent>
           </Select>
         </fieldset>
       )}
-      <MultiSelectFilter label="Strengths" options={(attrQ.data ?? []).map((a) => ({ value: a.slug, label: a.label, count: 0 }))}
+      <MultiSelectFilter label={t("filters.strengths")} options={(attrQ.data ?? []).map((a) => ({ value: a.slug, label: a.label, count: 0 }))}
         loading={attrQ.isLoading} selected={s.attributes} onChange={(attributes) => update({ attributes })} hideCounts />
       <fieldset className="space-y-2">
-        <legend className="text-sm font-semibold">Minimum reviews</legend>
+        <legend className="text-sm font-semibold">{t("filters.minReviews")}</legend>
         <div className="flex flex-wrap gap-1.5">
           {REVIEW_PRESETS.map((n) => (
             <Button key={n} type="button" size="sm" variant={minReviews === n ? "default" : "outline"} aria-pressed={minReviews === n}
               onClick={() => update({ minReviews: n })}>
-              {n === 0 ? "Any" : `${n}+`}
+              {n === 0 ? t("filters.anyReviews") : `${n}+`}
             </Button>
           ))}
         </div>
       </fieldset>
       <fieldset className="space-y-2">
-        <legend className="text-sm font-semibold">Minimum rating</legend>
+        <legend className="text-sm font-semibold">{t("filters.minRating")}</legend>
         <Select value={String(minRating)} onValueChange={(v) => update({ minRating: Number(v) })}>
-          <SelectTrigger aria-label="Minimum rating"><SelectValue /></SelectTrigger>
+          <SelectTrigger aria-label={t("filters.minRating")}><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="0">Any rating</SelectItem>
-            {[4, 3, 2, 1].map((n) => <SelectItem key={n} value={String(n)}>{n}+ stars</SelectItem>)}
+            <SelectItem value="0">{t("filters.anyRating")}</SelectItem>
+            {[4, 3, 2, 1].map((n) => <SelectItem key={n} value={String(n)}>{t("filters.chips.stars", { count: n })}</SelectItem>)}
           </SelectContent>
         </Select>
       </fieldset>
       <div className="flex items-center justify-between gap-2">
-        <Label htmlFor="show-inactive" className="text-sm font-semibold">Show inactive profiles</Label>
+        <Label htmlFor="show-inactive" className="text-sm font-semibold">{t("filters.showInactive")}</Label>
         <Switch id="show-inactive" checked={s.showInactive} onCheckedChange={(v) => update({ showInactive: v })} />
       </div>
-      <p className="-mt-4 text-xs text-muted-foreground">Profiles on leave are always included, with a badge.</p>
+      <p className="-mt-4 text-xs text-muted-foreground">{t("filters.inactiveHelper")}</p>
     </div>
   );
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
-      <h1 className="text-2xl font-bold">Find professionals</h1>
+      <h1 className="text-2xl font-bold">{t("title")}</h1>
 
       <form
         className="mt-4 grid gap-3 rounded-xl border bg-card p-4 md:grid-cols-[2fr_1.3fr_1fr_auto] md:items-end"
         onSubmit={(e) => { e.preventDefault(); update({ q: q.trim(), location: loc.trim() }); }}
       >
         <div className="space-y-1.5">
-          <Label htmlFor="q">Name, company or job title</Label>
+          <Label htmlFor="q">{t("searchForm.qLabel")}</Label>
           <div className="relative">
             <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input id="q" className="pl-8" value={q} maxLength={100} onChange={(e) => setQ(e.target.value)} placeholder="e.g. Designer, Acme" />
+            <Input id="q" className="pl-8" value={q} maxLength={100} onChange={(e) => setQ(e.target.value)} placeholder={t("searchForm.qPlaceholder")} />
           </div>
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="loc">Location</Label>
-          <Input id="loc" value={loc} maxLength={100} onChange={(e) => setLoc(e.target.value)} placeholder="e.g. Vienna" />
+          <Label htmlFor="loc">{t("searchForm.locationLabel")}</Label>
+          <Input id="loc" value={loc} maxLength={100} onChange={(e) => setLoc(e.target.value)} placeholder={t("searchForm.locationPlaceholder")} />
         </div>
         <div className="space-y-1.5">
-          <Label>Sort by</Label>
+          <Label>{t("searchForm.sortByLabel")}</Label>
           <Select value={sort} onValueChange={(v) => update({ sort: v })}>
-            <SelectTrigger aria-label="Sort by"><SelectValue /></SelectTrigger>
+            <SelectTrigger aria-label={t("searchForm.sortByLabel")}><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="rating">Highest rated</SelectItem>
-              <SelectItem value="reviews">Most reviewed</SelectItem>
-              <SelectItem value="newest">Newest</SelectItem>
+              <SelectItem value="rating">{t("searchForm.sortOptions.rating")}</SelectItem>
+              <SelectItem value="reviews">{t("searchForm.sortOptions.reviews")}</SelectItem>
+              <SelectItem value="newest">{t("searchForm.sortOptions.newest")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
-        <Button type="submit">Search</Button>
+        <Button type="submit">{t("searchForm.submit")}</Button>
       </form>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[240px_1fr]">
-        <aside className="hidden lg:block" aria-label="Filters">
+        <aside className="hidden lg:block" aria-label={t("filters.title")}>
           <div className="sticky top-20 rounded-xl border bg-card p-4">{panel}</div>
         </aside>
 
@@ -254,16 +262,16 @@ function SearchPage() {
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="outline" size="sm" className="lg:hidden">
-                  <SlidersHorizontal className="size-4" />Filters{chips.length ? ` (${chips.length})` : ""}
+                  <SlidersHorizontal className="size-4" />{t("filters.title")}{chips.length ? ` (${chips.length})` : ""}
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="overflow-y-auto">
-                <SheetHeader><SheetTitle>Filters</SheetTitle></SheetHeader>
+                <SheetHeader><SheetTitle>{t("filters.title")}</SheetTitle></SheetHeader>
                 <div className="mt-4 px-1">{panel}</div>
               </SheetContent>
             </Sheet>
             <p className="text-sm text-muted-foreground" aria-live="polite">
-              {isLoading ? "Searching…" : `${total} ${total === 1 ? "professional" : "professionals"} found`}
+              {isLoading ? t("results.searching") : t("results.count", { count: total, formattedCount: format.number(total) })}
             </p>
           </div>
 
@@ -272,12 +280,12 @@ function SearchPage() {
               {chips.map((c) => (
                 <Badge key={c.label} variant="secondary" className="gap-1 py-1 pl-2.5 pr-1">
                   <span className="max-w-48 truncate">{c.label}</span>
-                  <button type="button" onClick={c.remove} aria-label={`Remove filter ${c.label}`} className="rounded-full p-0.5 hover:bg-background">
+                  <button type="button" onClick={c.remove} aria-label={t("filters.removeFilter", { label: c.label })} className="rounded-full p-0.5 hover:bg-background">
                     <X className="size-3" />
                   </button>
                 </Badge>
               ))}
-              <Button variant="link" size="sm" className="h-auto p-0" onClick={clearAll}>Clear all</Button>
+              <Button variant="link" size="sm" className="h-auto p-0" onClick={clearAll}>{t("filters.clearAll")}</Button>
             </div>
           )}
 
@@ -289,27 +297,27 @@ function SearchPage() {
 
           {isError && (
             <Card className="mt-3"><CardContent className="flex flex-col items-center gap-3 py-10 text-center">
-              <p className="text-destructive">Search failed to load.</p>
-              <Button variant="outline" size="sm" onClick={() => refetch()}>Try again</Button>
+              <p className="text-destructive">{t("results.error")}</p>
+              <Button variant="outline" size="sm" onClick={() => refetch()}>{t("results.tryAgain")}</Button>
             </CardContent></Card>
           )}
 
           {!isLoading && !isError && total === 0 && (
             <Card className="mt-3"><CardContent className="flex flex-col items-center gap-3 py-12 text-center">
-              <p className="font-semibold">No professionals match these filters</p>
-              <p className="text-sm text-muted-foreground">Try removing a filter or broadening your search.</p>
-              {chips.length > 0 && <Button variant="outline" size="sm" onClick={clearAll}>Clear all filters</Button>}
+              <p className="font-semibold">{t("results.empty.title")}</p>
+              <p className="text-sm text-muted-foreground">{t("results.empty.description")}</p>
+              {chips.length > 0 && <Button variant="outline" size="sm" onClick={clearAll}>{t("filters.clearAllFilters")}</Button>}
             </CardContent></Card>
           )}
 
           {pages > 1 && (
             <div className="mt-8 flex items-center justify-center gap-3">
               <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => update({ page: page - 1 })}>
-                <ChevronLeft className="size-4" />Previous
+                <ChevronLeft className="size-4" />{t("pagination.previous")}
               </Button>
-              <span className="text-sm text-muted-foreground">Page {Math.min(page, pages)} of {pages}</span>
+              <span className="text-sm text-muted-foreground">{t("pagination.pageStatus", { current: format.number(Math.min(page, pages)), total: format.number(pages) })}</span>
               <Button variant="outline" size="sm" disabled={page >= pages} onClick={() => update({ page: page + 1 })}>
-                Next<ChevronRight className="size-4" />
+                {t("pagination.next")}<ChevronRight className="size-4" />
               </Button>
             </div>
           )}

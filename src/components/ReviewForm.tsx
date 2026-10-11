@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { Star } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation, Trans } from "react-i18next";
 
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RELATIONSHIPS } from "@/lib/profile-meta";
 import { containsAbuse } from "@/lib/moderation";
 import { useUnsavedWarning } from "@/lib/use-unsaved-warning";
+import { useFormat } from "@/lib/format";
 
 const MAX = 250;
 
@@ -36,6 +38,9 @@ export function ReviewForm({
   reviewerId: string;
   existing: ExistingReview;
 }) {
+  const { t } = useTranslation("reviews");
+  const { t: tc } = useTranslation("common");
+  const fmt = useFormat();
   const qc = useQueryClient();
   const [editing, setEditing] = useState(!existing);
   const [rating, setRating] = useState(existing?.rating ?? 0);
@@ -84,7 +89,7 @@ export function ReviewForm({
 
   const len = body.length;
   const abusive = containsAbuse(body);
-  const dateError = !from ? "" : from > thisMonth() ? "Start can't be in the future." : !present && to && to < from ? "End can't be before start." : "";
+  const dateError = !from ? "" : from > thisMonth() ? t("form.validation.future_date") : !present && to && to < from ? t("form.validation.date_order") : "";
   const contextMissing = !relationship || !company.trim() || !from || (!present && !to);
   const invalid = rating < 1 || body.trim().length === 0 || len > MAX || contextMissing || !!dateError;
   const dirty = !existing
@@ -96,15 +101,17 @@ export function ReviewForm({
       from !== month(existing.worked_from) ||
       present !== !existing.worked_to ||
       (!present && to !== month(existing.worked_to));
+
   const validationMsg =
-    rating < 1 ? "Please select a star rating." :
-    !relationship ? "Please choose how you worked together." :
-    !company.trim() ? "Please enter the company where you worked together." :
-    !from ? "Please enter when you started working together." :
+    rating < 1 ? t("form.validation.rating") :
+    !relationship ? t("form.validation.relationship") :
+    !company.trim() ? t("form.validation.company") :
+    !from ? t("form.validation.from") :
     dateError ? dateError :
-    !present && !to ? "Please enter an end date or tick Present." :
-    body.trim().length === 0 ? "Please write your review." :
-    len > MAX ? `Reviews can be at most ${MAX} characters.` : "";
+    !present && !to ? t("form.validation.to_date") :
+    body.trim().length === 0 ? t("form.validation.empty_body") :
+    len > MAX ? t("form.validation.too_long", { max: MAX }) : "";
+
   useUnsavedWarning(editing && dirty && !busy);
   const counterColor =
     len >= MAX ? "text-destructive" : len >= 220 ? "text-warning" : "text-muted-foreground";
@@ -136,20 +143,20 @@ export function ReviewForm({
       : await supabase.from("reviews").insert({ ...payload, profile_id: profileId, reviewer_id: reviewerId });
     setBusy(false);
     if (error) {
-      toast.error(error.code === "23505" ? "You've already reviewed this person." : error.message);
+      toast.error(error.code === "23505" ? t("form.toasts.already_reviewed") : error.message);
       return;
     }
-    toast.success(existing ? "Review updated" : "Review posted");
+    toast.success(existing ? t("form.toasts.updated") : t("form.toasts.posted"));
     await refresh();
   }
 
   async function remove() {
-    if (!existing || !confirm("Delete your review?")) return;
+    if (!existing || !confirm(t("form.delete_confirm"))) return;
     setBusy(true);
     const { error } = await supabase.from("reviews").delete().eq("id", existing.id);
     setBusy(false);
     if (error) { toast.error(error.message); return; }
-    toast.success("Review deleted");
+    toast.success(t("form.toasts.deleted"));
     await refresh();
   }
 
@@ -157,11 +164,11 @@ export function ReviewForm({
     return (
       <Card>
         <CardContent className="flex flex-wrap items-center justify-between gap-3 pt-6">
-          <p className="text-sm text-muted-foreground">You've reviewed this person.</p>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => setEditing(true)}>Edit review</Button>
+          <p className="text-sm text-muted-foreground">{t("form.reviewed_already")}</p>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" size="sm" onClick={() => setEditing(true)}>{t("form.edit_button")}</Button>
             <Button variant="ghost" size="sm" className="text-destructive" onClick={remove} disabled={busy}>
-              Delete
+              {tc("actions.delete")}
             </Button>
           </div>
         </CardContent>
@@ -173,7 +180,7 @@ export function ReviewForm({
     return (
       <Card>
         <CardContent className="pt-6 text-sm text-muted-foreground">
-          Please verify your email address (check your inbox for the confirmation link) before writing reviews.
+          {t("form.verify_email_notice")}
         </CardContent>
       </Card>
     );
@@ -182,17 +189,17 @@ export function ReviewForm({
   const shown = hover || rating;
   return (
     <Card>
-      <CardHeader><CardTitle className="text-lg">{existing ? "Edit your review" : "Write a review"}</CardTitle></CardHeader>
+      <CardHeader><CardTitle className="text-lg">{existing ? t("form.title_edit") : t("form.title_new")}</CardTitle></CardHeader>
       <CardContent>
         <form onSubmit={submit} className="space-y-4">
-          <div className="flex items-center gap-1" onMouseLeave={() => setHover(0)} role="radiogroup" aria-label="Star rating">
+          <div className="flex items-center gap-1" onMouseLeave={() => setHover(0)} role="radiogroup" aria-label={t("form.star_rating_label")}>
             {[1, 2, 3, 4, 5].map((i) => (
               <button
                 key={i}
                 type="button"
                 role="radio"
                 aria-checked={rating === i}
-                aria-label={`${i} star${i > 1 ? "s" : ""}`}
+                aria-label={t("form.stars", { count: i })}
                 onMouseEnter={() => setHover(i)}
                 onClick={() => setRating(i)}
                 className="rounded p-0.5 outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -205,32 +212,32 @@ export function ReviewForm({
                 />
               </button>
             ))}
-            <span className="ml-2 text-sm text-muted-foreground">{rating ? `${rating} of 5` : "Select a rating"}</span>
+            <span className="ml-2 text-sm text-muted-foreground">{rating ? t("form.rating_of_five", { rating }) : t("form.select_rating")}</span>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label htmlFor="rel">How did you work together? *</Label>
+              <Label htmlFor="rel">{t("form.relationship_label")}</Label>
               <Select value={relationship} onValueChange={setRelationship}>
-                <SelectTrigger id="rel" aria-required><SelectValue placeholder="Select relationship" /></SelectTrigger>
+                <SelectTrigger id="rel" aria-required><SelectValue placeholder={t("form.relationship_placeholder")} /></SelectTrigger>
                 <SelectContent>
                   {RELATIONSHIPS.map((r) => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="wc">Company *</Label>
-              <Input id="wc" list="wc-list" value={company} maxLength={100} onChange={(e) => setCompany(e.target.value)} placeholder="Where you worked together" aria-required />
+              <Label htmlFor="wc">{t("form.company_label")}</Label>
+              <Input id="wc" list="wc-list" value={company} maxLength={100} onChange={(e) => setCompany(e.target.value)} placeholder={t("form.company_placeholder")} aria-required />
               <datalist id="wc-list">{(companies ?? []).map((c) => <option key={c} value={c} />)}</datalist>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="wf">From *</Label>
+              <Label htmlFor="wf">{t("form.from_label")}</Label>
               <Input id="wf" type="month" value={from} max={thisMonth()} onChange={(e) => setFrom(e.target.value)} aria-required />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="wt">To *</Label>
+              <Label htmlFor="wt">{t("form.to_label")}</Label>
               <Input id="wt" type="month" value={present ? "" : to} min={from || undefined} max={thisMonth()} disabled={present} onChange={(e) => setTo(e.target.value)} />
-              <label className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Checkbox checked={present} onCheckedChange={(v) => setPresent(v === true)} />Still working together (Present)
+              <label className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                <Checkbox checked={present} onCheckedChange={(v) => setPresent(v === true)} />{t("form.present_label")}
               </label>
             </div>
             {dateError && <p className="text-xs text-destructive sm:col-span-2" role="alert">{dateError}</p>}
@@ -239,33 +246,39 @@ export function ReviewForm({
             <Textarea
               value={body}
               onChange={(e) => setBody(e.target.value)}
-              placeholder="Share what it's like to work with this person…"
+              placeholder={t("form.body_placeholder")}
               rows={4}
-              aria-label="Review text"
+              aria-label={t("form.body_aria_label")}
             />
             <div className="flex justify-between gap-2">
-              <p className="text-xs text-destructive">{abusive ? "Please remove abusive language — see our Review Guidelines." : ""}</p>
+              <p className="text-xs text-destructive">{abusive ? t("form.abusive_notice") : ""}</p>
               <p className={cn("text-xs font-medium", counterColor)}>{len}/{MAX}</p>
             </div>
           </div>
           {needsGuidelines && (
             <label className="flex items-start gap-2 text-sm">
               <Checkbox checked={accept} onCheckedChange={(v) => setAccept(v === true)} className="mt-0.5" />
-              <span>
-                I confirm this review is based on real professional experience and follows the{" "}
-                <Link to="/guidelines" target="_blank" className="text-primary underline">Review Guidelines</Link>{" "}
-                and <Link to="/terms" target="_blank" className="text-primary underline">Terms of Use</Link>.
+              <span className="flex-1">
+                <Trans
+                  ns="reviews"
+                  i18nKey="form.guidelines_notice"
+                  components={[
+                    <Link to="/guidelines" target="_blank" className="text-primary underline" />,
+                    
+                    <Link to="/terms" target="_blank" className="text-primary underline" />
+                  ]}
+                />
               </span>
             </label>
           )}
           {dirty && validationMsg && <p className="text-sm text-destructive" role="alert">{validationMsg}</p>}
-          {existing && !dirty && <p className="text-xs text-muted-foreground">Change any field to save.</p>}
+          {existing && !dirty && <p className="text-xs text-muted-foreground">{t("form.change_to_save")}</p>}
           <div className="flex justify-end gap-2">
             {existing && (
-              <Button type="button" variant="ghost" onClick={() => setEditing(false)}>Cancel</Button>
+              <Button type="button" variant="ghost" onClick={() => setEditing(false)}>{tc("actions.cancel")}</Button>
             )}
             <Button type="submit" disabled={invalid || busy || abusive || (!!existing && !dirty) || (needsGuidelines && !accept)}>
-              {busy ? "Saving…" : existing ? "Save review" : "Post review"}
+              {busy ? tc("actions.saving") : existing ? t("form.save_button") : t("form.post_button")}
             </Button>
           </div>
         </form>

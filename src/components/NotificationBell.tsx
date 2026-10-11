@@ -1,17 +1,20 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "@tanstack/react-router";
 import { Bell } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
-import { timeAgo } from "@/lib/time";
+import { useFormat } from "@/lib/format";
 
 export interface AppNotification {
   id: string; title: string; body: string; link: string | null; read_at: string | null; created_at: string;
 }
 
 export function NotificationBell({ userId }: { userId: string }) {
+  const { t } = useTranslation("messages");
+  const format = useFormat();
   const qc = useQueryClient();
   const navigate = useNavigate();
   const q = useQuery({
@@ -42,7 +45,7 @@ export function NotificationBell({ userId }: { userId: string }) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative" aria-label={`Notifications${unread ? `, ${unread} unread` : ""}`}>
+        <Button variant="ghost" size="icon" className="relative" aria-label={unread > 0 ? t("notifications_unread_aria", { count: unread }) : t("notifications_aria")}>
           <Bell className="size-4" />
           {unread > 0 && (
             <span className="absolute right-1 top-1 flex min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold leading-4 text-destructive-foreground">
@@ -53,16 +56,16 @@ export function NotificationBell({ userId }: { userId: string }) {
       </PopoverTrigger>
       <PopoverContent align="end" className="w-80 p-0">
         <div className="flex items-center justify-between border-b px-3 py-2">
-          <p className="text-sm font-semibold">Notifications</p>
-          <Button variant="link" size="sm" className="h-auto p-0" disabled={!unread} onClick={markAll}>Mark all as read</Button>
+          <p className="text-sm font-semibold">{t("notifications_title")}</p>
+          <Button variant="link" size="sm" className="h-auto p-0" disabled={!unread} onClick={markAll}>{t("mark_all_read")}</Button>
         </div>
         <div className="max-h-96 overflow-y-auto">
           {q.isLoading ? (
             <div className="space-y-2 p-3"><Skeleton className="h-10" /><Skeleton className="h-10" /></div>
           ) : q.isError ? (
-            <p className="p-4 text-center text-sm text-destructive">Couldn't load notifications.</p>
+            <p className="p-4 text-center text-sm text-destructive">{t("notifications_error")}</p>
           ) : items.length === 0 ? (
-            <p className="p-6 text-center text-sm text-muted-foreground">You're all caught up.</p>
+            <p className="p-6 text-center text-sm text-muted-foreground">{t("caught_up")}</p>
           ) : items.map((n) => (
             <button key={n.id} onClick={() => open(n)}
               className="flex w-full gap-2 border-b px-3 py-2 text-left last:border-0 hover:bg-accent focus-visible:bg-accent focus-visible:outline-none">
@@ -70,7 +73,7 @@ export function NotificationBell({ userId }: { userId: string }) {
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-semibold">{n.title}</span>
                 <span className="block truncate text-xs text-muted-foreground">{n.body}</span>
-                <span className="block text-[11px] text-muted-foreground">{timeAgo(n.created_at)}</span>
+                <span className="block text-[11px] text-muted-foreground">{format.relative(n.created_at)}</span>
               </span>
             </button>
           ))}

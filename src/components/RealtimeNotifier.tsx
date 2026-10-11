@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { toast } from "sonner";
@@ -9,6 +10,7 @@ interface NotificationRow { id: string; title: string; body: string; link: strin
 
 /** One realtime subscription per signed-in session: refreshes counts and shows message pop-ups. */
 export function RealtimeNotifier() {
+  const { t } = useTranslation("messages");
   const user = useAuthUser();
   const qc = useQueryClient();
   const navigate = useNavigate();
@@ -29,7 +31,7 @@ export function RealtimeNotifier() {
         toast(n.title, {
           description: n.body,
           duration: 5000,
-          action: n.link ? { label: "Open", onClick: () => navigate({ href: n.link! }) } : undefined,
+          action: n.link ? { label: t("open_notification"), onClick: () => navigate({ href: n.link! }) } : undefined,
         });
       })
       .subscribe();

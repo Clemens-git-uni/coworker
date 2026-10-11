@@ -1,0 +1,73 @@
+{
+  "title": "Profis finden",
+  "searchForm": {
+    "qLabel": "Name, Firma oder Jobtitel",
+    "qPlaceholder": "z.B. Designer, Acme",
+    "locationLabel": "Standort",
+    "locationPlaceholder": "z.B. Wien",
+    "sortByLabel": "Sortieren nach",
+    "sortOptions": {
+      "rating": "Beste Bewertung",
+      "reviews": "Meiste Bewertungen",
+      "newest": "Neueste"
+    },
+    "submit": "Suchen"
+  },
+  "filters": {
+    "title": "Filter",
+    "position": "Position / Fachgebiet",
+    "company": "Firma",
+    "language": "Sprache",
+    "minProficiency": "Mindestkenntnisse",
+    "anyLevel": "Jedes Niveau",
+    "strengths": "Stärken",
+    "minReviews": "Mindestanzahl Bewertungen",
+    "anyReviews": "Alle",
+    "minRating": "Mindestbewertung",
+    "anyRating": "Alle Bewertungen",
+    "showInactive": "Inaktive Profile anzeigen",
+    "inactiveHelper": "Profile in Elternzeit/Pause sind immer enthalten, mit einem entsprechenden Hinweis.",
+    "clearAll": "Alles löschen",
+    "clearAllFilters": "Alle Filter löschen",
+    "removeFilter": "Filter {{label}} entfernen",
+    "chips": {
+      "location": "Standort: {{location}}",
+      "stars": "{{count}}+ Sterne",
+      "reviews": "{{count}}+ Bewertungen",
+      "languageWithProficiency": "{{language}} ({{proficiency}}+)",
+      "includingInactive": "Inklusive inaktiver"
+    }
+  },
+  "results": {
+    "searching": "Suche…",
+    "count_one": "{{formattedCount}} Profi gefunden",
+    "count_other": "{{formattedCount}} Profis gefunden",
+    "error": "Suche konnte nicht geladen werden.",
+    "tryAgain": "Erneut versuchen",
+    "empty": {
+      "title": "Keine Profis entsprechen diesen Filtern",
+      "description": "Versuche, einen Filter zu entfernen oder deine Suche zu erweitern."
+    }
+  },
+  "pagination": {
+    "previous": "Zurück",
+    "next": "Weiter",
+    "pageStatus": "Seite {{current}} von {{total}}"
+  },
+  "multiSelect": {
+    "searchPlaceholder": "{{label}} suchen…",
+    "searchAriaLabel": "{{label}} suchen",
+    "loading": "Lädt…",
+    "noMatches": "Keine Treffer"
+  },
+  "saved": {
+    "title": "Gespeicherte Profis",
+    "error": "Deine gespeicherte Liste konnte nicht geladen werden. Bitte aktualisiere die Seite.",
+    "empty": {
+      "title": "Noch nichts gespeichert",
+      "description": "Tippe auf das Lesezeichen-Symbol bei einem Profi, um ihn für später zu speichern.",
+      "action": "Profis finden"
+    },
+    "removeAriaLabel": "{{name}} aus Gespeichert entfernen"
+  }
+}

@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation, Trans } from "react-i18next";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { useEffect, useRef, useState } from "react";
@@ -12,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { initials } from "@/components/ProfileCard";
-import { clockTime, timeAgo } from "@/lib/time";
+import { useFormat } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/messages")({
@@ -39,6 +40,8 @@ interface ConversationSummary {
 interface Message { id: string; conversation_id: string; sender_id: string; body: string; created_at: string; read_at: string | null }
 
 function MessagesPage() {
+  const { t } = useTranslation("messages");
+  const format = useFormat();
   const { user } = Route.useRouteContext();
   const { c } = Route.useSearch();
   const me = user.id;
@@ -75,17 +78,14 @@ function MessagesPage() {
     <div className="mx-auto max-w-6xl px-0 sm:px-4 sm:py-6">
       <div className="flex h-[calc(100dvh-3.5rem)] overflow-hidden border-y bg-card sm:h-[calc(100dvh-6.5rem)] sm:rounded-xl sm:border">
         <aside className={cn("w-full flex-col border-r md:flex md:w-80", c ? "hidden" : "flex")}>
-          <h1 className="border-b px-4 py-3 text-lg font-bold">Messages</h1>
+          <h1 className="border-b px-4 py-3 text-lg font-bold">{t("conversations_title")}</h1>
           <div className="flex-1 overflow-y-auto">
             {convQ.isLoading ? (
               <div className="space-y-3 p-4">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-14" />)}</div>
             ) : convQ.isError ? (
-              <p className="p-6 text-center text-sm text-destructive">Couldn't load conversations.</p>
+              <p className="p-6 text-center text-sm text-destructive">{t("conversations_error")}</p>
             ) : convs.length === 0 ? (
-              <div className="p-8 text-center text-sm text-muted-foreground">
-                <MessageSquare className="mx-auto mb-2 size-8 text-primary" />
-                No conversations yet. Open a profile and press <span className="font-semibold">Message</span> to start one.
-              </div>
+              <div className="p-8 text-center text-sm text-muted-foreground"><MessageSquare className="mx-auto mb-2 size-8 text-primary" /><Trans t={t} i18nKey="no_conversations">No conversations yet. Open a profile and press <span className="font-semibold">Message</span> to start one.</Trans></div>
             ) : convs.map((cv) => (
               <Link key={cv.id} to="/messages" search={{ c: cv.id }}
                 className={cn("flex items-center gap-3 border-b px-4 py-3 hover:bg-accent focus-visible:bg-accent focus-visible:outline-none", cv.id === c && "bg-accent")}>
@@ -95,15 +95,15 @@ function MessagesPage() {
                 </Avatar>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline justify-between gap-2">
-                    <p className={cn("truncate text-sm", cv.unread ? "font-bold" : "font-semibold")}>{cv.other?.full_name || "Member"}</p>
-                    <span className="shrink-0 text-[11px] text-muted-foreground">{timeAgo(cv.last?.created_at ?? cv.last_message_at)}</span>
+                    <p className={cn("truncate text-sm", cv.unread ? "font-bold" : "font-semibold")}>{cv.other?.full_name || t("member")}</p>
+                    <span className="shrink-0 text-[11px] text-muted-foreground">{format.relative(cv.last?.created_at ?? cv.last_message_at)}</span>
                   </div>
                   <div className="flex items-center justify-between gap-2">
                     <p className="truncate text-xs text-muted-foreground">
-                      {cv.last ? `${cv.last.sender_id === me ? "You: " : ""}${cv.last.body}` : "No messages yet"}
+                      {cv.last ? `${cv.last.sender_id === me ? t("you") : ""}${cv.last.body}` : t("no_messages")}
                     </p>
                     {cv.unread > 0 && (
-                      <span className="rounded-full bg-primary px-1.5 text-[10px] font-bold leading-4 text-primary-foreground" aria-label={`${cv.unread} unread`}>{cv.unread}</span>
+                      <span className="rounded-full bg-primary px-1.5 text-[10px] font-bold leading-4 text-primary-foreground" aria-label={t("unread", { count: cv.unread })}>{cv.unread}</span>
                     )}
                   </div>
                 </div>
@@ -116,7 +116,7 @@ function MessagesPage() {
             <Thread key={c} conversationId={c} me={me} other={active?.other ?? null} loadingMeta={convQ.isLoading} />
           ) : (
             <div className="flex flex-1 items-center justify-center p-8 text-center text-sm text-muted-foreground">
-              Select a conversation to start chatting.
+              {t("select_conversation")}
             </div>
           )}
         </section>
@@ -126,6 +126,8 @@ function MessagesPage() {
 }
 
 function Thread({ conversationId, me, other, loadingMeta }: { conversationId: string; me: string; other: Person | null; loadingMeta: boolean }) {
+  const { t } = useTranslation("messages");
+  const format = useFormat();
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [text, setText] = useState("");
@@ -174,18 +176,18 @@ function Thread({ conversationId, me, other, loadingMeta }: { conversationId: st
       .insert({ conversation_id: conversationId, sender_id: me, body })
       .select("id, conversation_id, sender_id, body, created_at, read_at").single();
     setSending(false);
-    if (error) { toast.error(error.message.includes("characters") ? error.message : "Message not sent. Please try again."); return; }
+    if (error) { toast.error(error.message.includes("characters") ? error.message : t("error_toast")); return; }
     setText("");
     qc.setQueryData<Message[]>(key, (old = []) => old.some((x) => x.id === data.id) ? old : [...old, data]);
     qc.invalidateQueries({ queryKey: ["conversations"] });
-    toast.success("Message sent", { duration: 2000 });
+    toast.success(t("sent_toast"), { duration: 2000 });
   }
 
   const msgs = q.data ?? [];
   return (
     <>
       <header className="flex items-center gap-3 border-b px-3 py-2.5">
-        <Button variant="ghost" size="icon" className="md:hidden" aria-label="Back to conversations" onClick={() => navigate({ to: "/messages", search: {} })}>
+        <Button variant="ghost" size="icon" className="md:hidden" aria-label={t("back_to_conversations")} onClick={() => navigate({ to: "/messages", search: {} })}>
           <ArrowLeft className="size-4" />
         </Button>
         {loadingMeta ? <Skeleton className="h-8 w-40" /> : other ? (
@@ -194,17 +196,17 @@ function Thread({ conversationId, me, other, loadingMeta }: { conversationId: st
               <AvatarImage src={other.avatar_url ?? undefined} alt="" />
               <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">{initials(other.full_name)}</AvatarFallback>
             </Avatar>
-            <span className="font-semibold">{other.full_name || "Member"}</span>
+            <span className="font-semibold">{other.full_name || t("member")}</span>
           </Link>
-        ) : <span className="text-sm text-muted-foreground">Conversation</span>}
+        ) : <span className="text-sm text-muted-foreground">{t("conversation_header")}</span>}
       </header>
       <div className="flex-1 space-y-2 overflow-y-auto bg-background/60 p-4" aria-live="polite">
         {q.isLoading ? (
           <div className="space-y-3"><Skeleton className="h-10 w-2/3" /><Skeleton className="ml-auto h-10 w-1/2" /></div>
         ) : q.isError ? (
-          <p className="text-center text-sm text-destructive">Couldn't load messages.</p>
+          <p className="text-center text-sm text-destructive">{t("messages_error")}</p>
         ) : msgs.length === 0 ? (
-          <p className="pt-10 text-center text-sm text-muted-foreground">Say hello 👋</p>
+          <p className="pt-10 text-center text-sm text-muted-foreground">{t("say_hello")}</p>
         ) : msgs.map((m) => {
           const mine = m.sender_id === me;
           return (
@@ -213,7 +215,7 @@ function Thread({ conversationId, me, other, loadingMeta }: { conversationId: st
                 mine ? "rounded-br-sm bg-primary text-primary-foreground" : "rounded-bl-sm border bg-card text-card-foreground")}>
                 <p className="whitespace-pre-wrap break-words">{m.body}</p>
                 <p className={cn("mt-0.5 text-right text-[10px]", mine ? "text-primary-foreground/75" : "text-muted-foreground")}>
-                  {clockTime(m.created_at)}{mine && m.read_at ? " · Seen" : ""}
+                  new Intl.DateTimeFormat(format.locale, { hour: "2-digit", minute: "2-digit" }).format(new Date(m.created_at)){mine && m.read_at ? " · Seen" : ""}
                 </p>
               </div>
             </div>
@@ -226,13 +228,13 @@ function Thread({ conversationId, me, other, loadingMeta }: { conversationId: st
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
-          placeholder="Write a message…"
-          aria-label="Message"
+          placeholder={t("write_placeholder")}
+          aria-label={t("message_aria")}
           maxLength={2000}
           rows={1}
           className="max-h-32 min-h-10 resize-none"
         />
-        <Button type="submit" size="icon" disabled={!text.trim() || sending} aria-label="Send message">
+        <Button type="submit" size="icon" disabled={!text.trim() || sending} aria-label={t("send_aria")}>
           {sending ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
         </Button>
       </form>

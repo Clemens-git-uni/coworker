@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { MessageSquareQuote, Star } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -9,9 +10,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ProfileCard } from "@/components/ProfileCard";
 import { StarRating } from "@/components/StarRating";
 import { relationshipLabel } from "@/lib/profile-meta";
+import { useFormat } from "@/lib/format";
 
 function CountUp({ value, decimals = 0, start }: { value: number; decimals?: number; start: boolean }) {
   const [n, setN] = useState(0);
+  const { number } = useFormat();
+  
   useEffect(() => {
     if (!start) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setN(value); return; }
@@ -25,10 +29,12 @@ function CountUp({ value, decimals = 0, start }: { value: number; decimals?: num
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, [start, value]);
-  return <>{n.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}</>;
+
+  return <>{number(n, { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}</>;
 }
 
 export function StatsStrip() {
+  const { t } = useTranslation("landing");
   const ref = useRef<HTMLDivElement>(null);
   const [seen, setSeen] = useState(false);
   const q = useQuery({
@@ -49,12 +55,12 @@ export function StatsStrip() {
   if (q.isError) return null;
   const s = q.data;
   const items = [
-    { label: "Professionals", value: Number(s?.professionals ?? 0), decimals: 0 },
-    { label: "Reviews", value: Number(s?.reviews ?? 0), decimals: 0 },
-    { label: "Average rating", value: Number(s?.avg_rating ?? 0), decimals: 1, star: true },
+    { label: t("stats.professionals"), value: Number(s?.professionals ?? 0), decimals: 0 },
+    { label: t("stats.reviews"), value: Number(s?.reviews ?? 0), decimals: 0 },
+    { label: t("stats.avgRating"), value: Number(s?.avg_rating ?? 0), decimals: 1, star: true },
   ];
   return (
-    <section ref={ref} aria-label="Platform statistics" className="border-b bg-background">
+    <section ref={ref} aria-label={t("stats.ariaLabel")} className="border-b bg-background">
       <div className="mx-auto grid max-w-6xl grid-cols-3 divide-x px-4 py-6">
         {items.map((it) => (
           <div key={it.label} className="px-2 text-center">
@@ -73,6 +79,7 @@ export function StatsStrip() {
 }
 
 export function RecentlyReviewed() {
+  const { t } = useTranslation("landing");
   const q = useQuery({
     queryKey: ["recently-reviewed"],
     queryFn: async () => {
@@ -88,8 +95,8 @@ export function RecentlyReviewed() {
   if (q.isError || items.length < 3) return null;
   return (
     <section className="mx-auto max-w-6xl px-4 py-12" aria-labelledby="recent-h">
-      <h2 id="recent-h" className="text-2xl font-bold tracking-tight">Recently reviewed</h2>
-      <Carousel opts={{ align: "start" }} className="mt-6" aria-label="Recently reviewed professionals">
+      <h2 id="recent-h" className="text-2xl font-bold tracking-tight">{t("recentlyReviewed.title")}</h2>
+      <Carousel opts={{ align: "start" }} className="mt-6" aria-label={t("recentlyReviewed.ariaLabel")}>
         <CarouselContent>
           {items.map((p) => (
             <CarouselItem key={p.id} className="basis-[88%] sm:basis-1/2 lg:basis-1/3">
@@ -105,6 +112,7 @@ export function RecentlyReviewed() {
 }
 
 export function FeaturedReviews() {
+  const { t } = useTranslation("landing");
   const q = useQuery({
     queryKey: ["featured-reviews"],
     queryFn: async () => {
@@ -121,7 +129,7 @@ export function FeaturedReviews() {
   return (
     <section className="border-y bg-card" aria-labelledby="featured-h">
       <div className="mx-auto max-w-6xl px-4 py-12">
-        <h2 id="featured-h" className="text-2xl font-bold tracking-tight">Featured reviews</h2>
+        <h2 id="featured-h" className="text-2xl font-bold tracking-tight">{t("featuredReviews.title")}</h2>
         <div className="mt-6 grid gap-4 md:grid-cols-3">
           {items.map((r) => (
             <Card key={r.id} className="h-full bg-background">
@@ -131,10 +139,10 @@ export function FeaturedReviews() {
                 <p className="line-clamp-4 flex-1 text-sm text-foreground/90">“{r.body.length > 180 ? r.body.slice(0, 177) + "…" : r.body}”</p>
                 <div className="text-xs text-muted-foreground">
                   <p>
-                    {r.reviewer_name || "A colleague"}
+                    {r.reviewer_name || t("featuredReviews.colleague")}
                     {relationshipLabel(r.relationship) ? ` · ${relationshipLabel(r.relationship)}` : ""}
                   </p>
-                  <p>about <Link to="/profile/$id" params={{ id: r.profile_id }} className="font-semibold text-primary hover:underline">{r.profile_name || "this professional"}</Link></p>
+                  <p>{t("featuredReviews.about")} <Link to="/profile/$id" params={{ id: r.profile_id }} className="font-semibold text-primary hover:underline">{r.profile_name || t("featuredReviews.professional")}</Link></p>
                 </div>
               </CardContent>
             </Card>

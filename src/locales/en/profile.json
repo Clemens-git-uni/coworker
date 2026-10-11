@@ -1,0 +1,109 @@
+{
+  "unnamed": "Unnamed professional",
+  "loading": {
+    "title": "This profile didn't load",
+    "retry": "Try again"
+  },
+  "not_found": {
+    "title": "Profile not found",
+    "home": "Go home"
+  },
+  "active_return": {
+    "title": "Your return date has passed. Are you back?",
+    "action": "Switch to Active",
+    "success": "Status changed to Active",
+    "error": "Couldn't update your status."
+  },
+  "edit": "Edit profile",
+  "status_inactive_note_on_leave": "This person is currently on leave and may reply late.",
+  "status_inactive_note_inactive": "This person is currently inactive and may reply late.",
+  "reviews_count_one": "{{count}} review",
+  "reviews_count_other": "{{count}} reviews",
+  "star_label_one": "{{count}} star",
+  "star_label_other": "{{count}} stars",
+  "strengths_title": "Strengths colleagues mention",
+  "worked_with": "Worked with this person?",
+  "sign_in_to_review": "Sign in to write a review",
+  "reviews_heading": "Reviews",
+  "filters": {
+    "relationship_label": "Filter by relationship",
+    "relationship_all": "All relationships",
+    "relationship_only": "Only {{relationship}}",
+    "sort_label": "Sort reviews",
+    "sort_newest": "Newest",
+    "sort_helpful": "Most helpful",
+    "sort_highest": "Highest rated",
+    "sort_lowest": "Lowest rated",
+    "verified_only": "Verified colleagues only",
+    "mentioning": "Showing reviews mentioning",
+    "clear_filter": "Clear {{label}} filter"
+  },
+  "reviews_error": "Reviews didn't load. Please refresh.",
+  "reviews_empty": "No reviews yet.",
+  "reviews_no_match": "No reviews match these filters.",
+  "vote": {
+    "error_generic": "Couldn't save your vote.",
+    "saved": "Vote saved",
+    "removed": "Vote removed"
+  },
+  "nav": {
+    "aria": "Search results navigation",
+    "back": "Back to results",
+    "prev": "Previous",
+    "prev_aria": "Previous profile",
+    "next": "Next",
+    "next_aria": "Next profile",
+    "counter": "{{current}} of {{total}}"
+  },
+  "bookmark": {
+    "sign_in": "Sign in to save professionals",
+    "remove_aria": "Remove {{name}} from Saved",
+    "save_aria": "Save {{name}}",
+    "saved": "Saved",
+    "save": "Save"
+  },
+  "message": {
+    "sign_in": "Sign in to send messages",
+    "error": "Couldn't open the conversation. Please try again.",
+    "action": "Message"
+  },
+  "share": {
+    "title": "Ask colleagues for reviews",
+    "description": "Share your personal link — it opens straight to the review form.",
+    "copy": "Copy review link",
+    "copy_success": "Review link copied",
+    "copy_error": "Couldn't copy. Please copy the link manually: {{url}}",
+    "share_btn": "Share",
+    "share_title": "Review {{name}} on CoWorker",
+    "share_text": "Worked with me? Leave a short review on CoWorker.",
+    "share_error": "Sharing failed",
+    "qr_aria": "Show QR code",
+    "qr_dialog_title": "Your review QR code",
+    "qr_dialog_description": "Scan to open your review link."
+  },
+  "linkedin": {
+    "aria": "View on LinkedIn",
+    "label": "View on LinkedIn"
+  },
+  "review_link": {
+    "invalid_title": "This review link isn't valid",
+    "invalid_desc": "It may have been replaced with a new one. Ask the person for their current link.",
+    "find_professionals": "Find professionals",
+    "question": "How was it working with {{name}}?",
+    "question_default": "this person",
+    "sign_in_title": "Sign in to leave your review",
+    "sign_in_desc": "Reviews are tied to real accounts so they stay trustworthy. You'll come right back here.",
+    "create_account": "Create account",
+    "sign_in_btn": "Sign in",
+    "own_link_note": "This is your own review link — share it with colleagues. You can't review yourself.",
+    "view_profile": "View full profile"
+  },
+  "status": {
+    "on_leave": "On leave",
+    "inactive": "Inactive",
+    "back_at": "back {{date}}",
+    "back_separator": " · "
+  },
+  "languages_more": "+{{count}}",
+  "rating_aria": "{{value}} out of 5 stars"
+}

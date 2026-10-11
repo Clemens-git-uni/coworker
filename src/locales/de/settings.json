@@ -1,0 +1,123 @@
+{
+  "profile": {
+    "editTitle": "Profil bearbeiten",
+    "fullName": "Vollständiger Name",
+    "headline": {
+      "label": "Headline",
+      "placeholder": "z. B. Senior Product Designer"
+    },
+    "company": "Unternehmen",
+    "location": {
+      "label": "Standort",
+      "placeholder": "z. B. Wien, Österreich"
+    },
+    "avatarUrl": {
+      "label": "Foto-URL",
+      "placeholder": "https://…"
+    },
+    "saveChanges": "Änderungen speichern",
+    "saving": "Wird gespeichert…",
+    "cancel": "Abbrechen",
+    "success": "Profil aktualisiert",
+    "error": {
+      "nameRequired": "Name ist erforderlich",
+      "nameMax": "Name darf maximal 100 Zeichen lang sein",
+      "headlineMax": "Headline darf maximal 120 Zeichen lang sein",
+      "companyMax": "Unternehmen darf maximal 100 Zeichen lang sein",
+      "locationMax": "Standort darf maximal 100 Zeichen lang sein",
+      "photoUrl": "Foto muss eine gültige URL sein",
+      "photoMax": "URL darf maximal 500 Zeichen lang sein",
+      "invalid": "Ungültige Eingabe"
+    },
+    "meta": {
+      "title": "Dein Profil bearbeiten — CoWorker",
+      "description": "Aktualisiere deinen Namen, deine Headline, dein Unternehmen, deinen Standort und dein Foto.",
+      "ogTitle": "Dein Profil bearbeiten — CoWorker",
+      "ogDescription": "Aktualisiere dein berufliches CoWorker-Profil."
+    }
+  },
+  "languages": {
+    "title": "Sprachen",
+    "description": "Füge die Sprachen hinzu, in denen du arbeitest, und wie gut du sie sprichst.",
+    "empty": "Noch keine Sprachen hinzugefügt.",
+    "add": "Sprache hinzufügen",
+    "search": "Sprachen suchen…",
+    "notFound": "Keine Sprache gefunden.",
+    "save": "Sprachen speichern",
+    "saving": "Wird gespeichert…",
+    "success": "Sprachen gespeichert",
+    "error": "Sprachen konnten nicht gespeichert werden.",
+    "removeAria": "{{language}} entfernen",
+    "proficiencyAria": "{{language}}-Kenntnisse"
+  },
+  "linkedin": {
+    "title": "LinkedIn",
+    "description": "Füge einen Link zu deinem LinkedIn-Profil hinzu. Wir speichern nur den Link – es wird nichts von LinkedIn importiert.",
+    "url": {
+      "label": "Profil-Link",
+      "placeholder": "linkedin.com/in/dein-name",
+      "error": "Verwende einen Profil-Link wie linkedin.com/in/dein-name"
+    },
+    "public": {
+      "label": "Link in meinem öffentlichen Profil anzeigen"
+    },
+    "remove": "Link entfernen",
+    "save": "LinkedIn speichern",
+    "saving": "Wird gespeichert…",
+    "success": {
+      "saved": "LinkedIn-Link gespeichert",
+      "removed": "LinkedIn-Link entfernt"
+    }
+  },
+  "reviewLink": {
+    "title": "Dein Bewertungslink",
+    "description": "Ein privater Link, der Kollegen direkt zu deinem Bewertungsformular führt.",
+    "regenerate": "Link neu generieren",
+    "confirmRegenerate": "Neuen Bewertungslink erstellen? Dein alter Link wird nicht mehr funktionieren.",
+    "success": "Neuer Bewertungslink erstellt",
+    "error": "Neuer Link konnte nicht erstellt werden."
+  },
+  "status": {
+    "title": "Verfügbarkeitsstatus",
+    "description": "Lass andere wissen, ob du gerade abwesend bist. Deine Bewertungen bleiben immer sichtbar.",
+    "returnDate": "Rückkehrdatum (optional)",
+    "note": {
+      "label": "Kurze Notiz (optional)",
+      "placeholder": "z. B. In Elternzeit bis Frühling"
+    },
+    "save": "Status speichern",
+    "saving": "Wird gespeichert…",
+    "success": "Status geändert auf {{status}}",
+    "error": "Status konnte nicht aktualisiert werden."
+  },
+  "workEmail": {
+    "title": "Verifizierte geschäftliche E-Mail",
+    "description": "Wenn du und eine bewertende Person beide eine E-Mail desselben Unternehmens verifizieren, erhält deren Bewertung ein „Verifizierter Kollege“-Abzeichen. Es wird nur die Unternehmens-Domain verwendet – deine E-Mail wird nie angezeigt.",
+    "verifiedAt": "Verifiziert bei {{domain}}",
+    "removeAria": "{{domain}} entfernen",
+    "email": {
+      "label": "Geschäftliche E-Mail",
+      "placeholder": "du@unternehmen.de"
+    },
+    "sendCode": "Code senden",
+    "sending": "Wird gesendet…",
+    "code": {
+      "label": "6-stelliger Code an {{email}} gesendet"
+    },
+    "verify": "Verifizieren",
+    "changeEmail": "E-Mail ändern",
+    "help": "Kostenlose E-Mail-Anbieter (Gmail, Outlook, Yahoo, iCloud, GMX…) können nicht verwendet werden.",
+    "success": {
+      "sent": "Code gesendet – schau in dein geschäftliches Postfach",
+      "verified": "Geschäftliche E-Mail verifiziert bei {{domain}}",
+      "removed": "Geschäftliche E-Mail entfernt"
+    },
+    "error": {
+      "invalid": "Bitte gib eine gültige geschäftliche E-Mail-Adresse ein.",
+      "generic": "Konnte nicht entfernt werden."
+    },
+    "warning": {
+      "notSent": "Dein Code wurde erstellt, aber der E-Mail-Versand ist noch nicht aktiviert, daher kann er nicht zugestellt werden."
+    }
+  }
+}

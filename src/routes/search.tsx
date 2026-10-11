@@ -110,7 +110,11 @@ function SearchPage() {
     queryFn: async () => {
       const { data, error } = await supabase.rpc("search_profiles_v3", { ...filterArgs, _limit: PAGE_SIZE, _offset: (page - 1) * PAGE_SIZE });
       if (error) throw error;
-      return data;
+      const ids = (data ?? []).map((r) => r.id);
+      if (!ids.length) return data;
+      const { data: li } = await supabase.from("profiles").select("id, linkedin_url").in("id", ids).not("linkedin_url", "is", null);
+      const map = new Map((li ?? []).map((r) => [r.id, r.linkedin_url]));
+      return data.map((r) => ({ ...r, linkedin_url: map.get(r.id) ?? null }));
     },
   });
 

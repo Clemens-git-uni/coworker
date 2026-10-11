@@ -12,6 +12,8 @@ import { Label } from "@/components/ui/label";
 import { LanguagesEditor } from "@/components/settings/LanguagesEditor";
 import { StatusEditor } from "@/components/settings/StatusEditor";
 import { ReviewLinkSettings } from "@/components/settings/ReviewLinkSettings";
+import { LinkedInSettings } from "@/components/settings/LinkedInSettings";
+import { useUnsavedWarning } from "@/lib/use-unsaved-warning";
 import { WorkEmailSettings } from "@/components/settings/WorkEmailSettings";
 
 export const Route = createFileRoute("/_authenticated/profile/edit")({
@@ -65,6 +67,14 @@ function EditProfile() {
       });
   }, [data]);
 
+  const original: Form = data
+    ? { full_name: data.full_name, headline: data.headline, company: data.company, location: data.location, avatar_url: data.avatar_url ?? "" }
+    : form;
+  const dirty = (Object.keys(form) as (keyof Form)[]).some((k) => form[k].trim() !== original[k].trim());
+  const check = schema.safeParse(form);
+  const validationError = check.success ? "" : check.error.issues[0]?.message ?? "";
+  useUnsavedWarning(dirty && !saving);
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     const parsed = schema.safeParse(form);
@@ -110,15 +120,17 @@ function EditProfile() {
             {field("company", "Company")}
             {field("location", "Location", "e.g. Vienna, Austria")}
             {field("avatar_url", "Photo URL", "https://…")}
+            {dirty && validationError && <p className="text-sm text-destructive" role="alert">{validationError}</p>}
             <div className="flex justify-end gap-2 pt-2">
               <Button type="button" variant="ghost" onClick={() => navigate({ to: "/profile/$id", params: { id: user.id } })}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={saving}>{saving ? "Saving…" : "Save changes"}</Button>
+              <Button type="submit" disabled={saving || !dirty || !!validationError}>{saving ? "Saving…" : "Save changes"}</Button>
             </div>
           </form>
         </CardContent>
       </Card>
+      <LinkedInSettings userId={user.id} />
       <LanguagesEditor userId={user.id} />
       {data && <StatusEditor userId={user.id} initial={{ status: data.status, status_return_date: data.status_return_date, status_note: data.status_note }} />}
       {data && <ReviewLinkSettings userId={user.id} slug={data.review_slug} name={data.full_name} />}

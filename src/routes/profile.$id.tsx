@@ -22,6 +22,7 @@ import { ReviewItem, type ReviewRow } from "@/components/ReviewItem";
 import { ResultsNavBar } from "@/components/ResultsNavBar";
 import { ShareReviewLink } from "@/components/ShareReviewLink";
 import { AttributePills, LanguageBadges, StatusBadge } from "@/components/ProfileBadges";
+import { LinkedInLink } from "@/components/LinkedInLink";
 import { initials } from "@/components/ProfileCard";
 import { RELATIONSHIPS } from "@/lib/profile-meta";
 import { mentions, profileAttributesQueryOptions, profileLanguagesQueryOptions, profileQueryOptions } from "@/lib/profile-queries";
@@ -207,6 +208,7 @@ function ProfilePage() {
               <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
                 {profile.company && <span className="flex items-center gap-1"><Building2 className="size-4" />{profile.company}</span>}
                 {profile.location && <span className="flex items-center gap-1"><MapPin className="size-4" />{profile.location}</span>}
+                <LinkedInLink url={profile.linkedin_url} label />
               </div>
               {profile.status !== "active" && profile.status_note && <p className="text-sm italic text-muted-foreground">{profile.status_note}</p>}
               <LanguageBadges languages={langsQ.data ?? []} className="pt-1" />

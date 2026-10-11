@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RELATIONSHIPS } from "@/lib/profile-meta";
 import { containsAbuse } from "@/lib/moderation";
+import { useUnsavedWarning } from "@/lib/use-unsaved-warning";
 
 const MAX = 250;
 
@@ -86,6 +87,25 @@ export function ReviewForm({
   const dateError = !from ? "" : from > thisMonth() ? "Start can't be in the future." : !present && to && to < from ? "End can't be before start." : "";
   const contextMissing = !relationship || !company.trim() || !from || (!present && !to);
   const invalid = rating < 1 || body.trim().length === 0 || len > MAX || contextMissing || !!dateError;
+  const dirty = !existing
+    ? rating > 0 || body.trim() !== "" || !!relationship || !!company.trim() || !!from || !!to || present
+    : rating !== existing.rating ||
+      body.trim() !== existing.body.trim() ||
+      relationship !== (existing.relationship ?? "") ||
+      company.trim() !== (existing.worked_company ?? "").trim() ||
+      from !== month(existing.worked_from) ||
+      present !== !existing.worked_to ||
+      (!present && to !== month(existing.worked_to));
+  const validationMsg =
+    rating < 1 ? "Please select a star rating." :
+    !relationship ? "Please choose how you worked together." :
+    !company.trim() ? "Please enter the company where you worked together." :
+    !from ? "Please enter when you started working together." :
+    dateError ? dateError :
+    !present && !to ? "Please enter an end date or tick Present." :
+    body.trim().length === 0 ? "Please write your review." :
+    len > MAX ? `Reviews can be at most ${MAX} characters.` : "";
+  useUnsavedWarning(editing && dirty && !busy);
   const counterColor =
     len >= MAX ? "text-destructive" : len >= 220 ? "text-warning" : "text-muted-foreground";
 
@@ -238,11 +258,13 @@ export function ReviewForm({
               </span>
             </label>
           )}
+          {dirty && validationMsg && <p className="text-sm text-destructive" role="alert">{validationMsg}</p>}
+          {existing && !dirty && <p className="text-xs text-muted-foreground">Change any field to save.</p>}
           <div className="flex justify-end gap-2">
             {existing && (
               <Button type="button" variant="ghost" onClick={() => setEditing(false)}>Cancel</Button>
             )}
-            <Button type="submit" disabled={invalid || busy || abusive || (needsGuidelines && !accept)}>
+            <Button type="submit" disabled={invalid || busy || abusive || (!!existing && !dirty) || (needsGuidelines && !accept)}>
               {busy ? "Saving…" : existing ? "Save review" : "Post review"}
             </Button>
           </div>

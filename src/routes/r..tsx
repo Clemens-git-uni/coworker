@@ -13,7 +13,7 @@ import { StatusBadge } from "@/components/ProfileBadges";
 import { initials } from "@/components/ProfileCard";
 import { useAuthUser } from "@/hooks/useAuthUser";
 
-export const Route = createFileRoute("/r/$slug")({
+export const Route = createFileRoute("/r/")({
   head: () => ({
     meta: [
       { title: "Leave a review — CoWorker" },

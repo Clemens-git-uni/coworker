@@ -277,6 +277,35 @@ export type Database = {
           },
         ]
       }
+      profile_linkedin: {
+        Row: {
+          is_public: boolean
+          profile_id: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          is_public?: boolean
+          profile_id: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          is_public?: boolean
+          profile_id?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_linkedin_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -287,6 +316,7 @@ export type Database = {
           guidelines_accepted_at: string | null
           headline: string
           id: string
+          linkedin_url: string | null
           location: string
           review_count: number
           review_slug: string
@@ -305,6 +335,7 @@ export type Database = {
           guidelines_accepted_at?: string | null
           headline?: string
           id: string
+          linkedin_url?: string | null
           location?: string
           review_count?: number
           review_slug?: string
@@ -323,6 +354,7 @@ export type Database = {
           guidelines_accepted_at?: string | null
           headline?: string
           id?: string
+          linkedin_url?: string | null
           location?: string
           review_count?: number
           review_slug?: string

@@ -53,7 +53,7 @@ export function ProfileCard({ p, action, snippet, onOpen, linkSearch }: {
           <div className="flex items-center gap-2 pt-1 text-sm">
             <StarRating value={Number(p.avg_rating)} />
             <span className="font-semibold">{count ? number(Number(p.avg_rating), { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : "–"}</span>
-            <span className="text-muted-foreground">({t("reviews_count", { count: number(count) })})</span>
+            <span className="text-muted-foreground">({t("reviews_count", { count: count })})</span>
           </div>
           {snippet && <p className="line-clamp-2 pt-1 text-sm italic text-muted-foreground">“{snippet}”</p>}
           <LanguageBadges languages={langs} max={3} className="pt-1" />

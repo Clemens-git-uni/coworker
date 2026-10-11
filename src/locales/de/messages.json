@@ -24,5 +24,6 @@
   "caught_up": "Du bist auf dem neuesten Stand.",
   "notifications_aria": "Benachrichtigungen",
   "notifications_unread_aria": "Benachrichtigungen, {{count}} ungelesen",
-  "open_notification": "Öffnen"
+  "open_notification": "Öffnen",
+  "member": "Mitglied"
 }

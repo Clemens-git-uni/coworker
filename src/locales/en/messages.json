@@ -24,5 +24,6 @@
   "caught_up": "You're all caught up.",
   "notifications_aria": "Notifications",
   "notifications_unread_aria": "Notifications, {{count}} unread",
-  "open_notification": "Open"
+  "open_notification": "Open",
+  "member": "Member"
 }

@@ -39,7 +39,7 @@
   "save": "Save",
   "delete_aria": "Delete {{name}}",
   "confirm_delete": "Delete \"{{name}}\"?",
-  "toast_saved": \"{{name}}\" saved — profiles recalculated",
+  "toast_saved": "\"{{name}}\" saved — profiles recalculated",
   "toast_deleted": "Strength deleted",
   "toast_added": "Strength added",
   "toast_exists": "That strength already exists.",

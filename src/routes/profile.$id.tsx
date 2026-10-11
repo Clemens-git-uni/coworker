@@ -245,7 +245,7 @@ function ProfilePage() {
           <div className="flex flex-col items-center justify-center text-center">
             <div className="text-5xl font-bold">{total ? number(avg, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : "–"}</div>
             <StarRating value={avg} className="mt-2" />
-            <p className="mt-1 text-sm text-muted-foreground">{t("profile:reviews_count", { count: number(total) })}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{t("profile:reviews_count", { count: total })}</p>
           </div>
           <div className="space-y-2">
             {counts.map(({ star, count }) => (
@@ -288,18 +288,18 @@ function ProfilePage() {
           <h2 id="reviews-h" className="text-lg font-semibold">{t("profile:reviews_heading")}</h2>
           <div className="flex flex-wrap items-center gap-3">
             <Select value={relFilter} onValueChange={setRelFilter}>
-              <SelectTrigger className="h-9 w-40" aria-label={t("profile:filters.relationship_label")}><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-9 w-full sm:w-48" aria-label={t("profile:filters.relationship_label")}><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t("profile:filters.relationship_all")}</SelectItem>
                 {RELATIONSHIPS.map((r) => (
                   <SelectItem key={r.value} value={r.value}>
-                    {t("profile:filters.relationship_only", { relationship: r.filter.toLowerCase() })}
+                    {t("profile:filters.relationship_only", { relationship: r.filter })}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
             <Select value={sort} onValueChange={setSort}>
-              <SelectTrigger className="h-9 w-36" aria-label={t("profile:filters.sort_label")}><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-9 w-full sm:w-44" aria-label={t("profile:filters.sort_label")}><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="newest">{t("profile:filters.sort_newest")}</SelectItem>
                 <SelectItem value="helpful">{t("profile:filters.sort_helpful")}</SelectItem>

@@ -1,0 +1,8 @@
+{
+  "language": { "label": "Interface language", "help": "Choose the language for menus, buttons and messages. Reviews and profiles are shown as written." },
+  "nav": { "findProfessionals": "Find professionals", "saved": "Saved", "messages": "Messages", "messagesUnread": "Messages, {{count}} unread", "accountMenu": "Account menu", "account": "Account", "yourAccount": "Your account", "viewProfile": "View profile", "editProfile": "Edit profile", "moderation": "Moderation", "signOut": "Sign out", "signIn": "Sign in", "joinNow": "Join now" },
+  "theme": { "label": "Appearance", "light": "Light", "dark": "Dark", "system": "System" },
+  "actions": { "save": "Save", "saving": "Saving…", "cancel": "Cancel", "delete": "Delete", "edit": "Edit", "tryAgain": "Try again", "back": "Back", "close": "Close", "remove": "Remove", "loading": "Loading…" },
+  "unsaved": "You have unsaved changes. Leave anyway?",
+  "errors": { "notFoundTitle": "Page not found", "notFoundBody": "The page you're looking for doesn't exist or has been moved.", "goHome": "Go home", "genericTitle": "Something went wrong", "genericBody": "An unexpected error occurred. Please try again." }
+}

@@ -1,0 +1,8 @@
+{
+  "language": { "label": "Sprache der Oberfläche", "help": "Wähle die Sprache für Menüs, Schaltflächen und Meldungen. Bewertungen und Profile werden so angezeigt, wie sie geschrieben wurden." },
+  "nav": { "findProfessionals": "Fachleute finden", "saved": "Gemerkt", "messages": "Nachrichten", "messagesUnread": "Nachrichten, {{count}} ungelesen", "accountMenu": "Kontomenü", "account": "Konto", "yourAccount": "Dein Konto", "viewProfile": "Profil ansehen", "editProfile": "Profil bearbeiten", "moderation": "Moderation", "signOut": "Abmelden", "signIn": "Anmelden", "joinNow": "Jetzt beitreten" },
+  "theme": { "label": "Darstellung", "light": "Hell", "dark": "Dunkel", "system": "System" },
+  "actions": { "save": "Speichern", "saving": "Wird gespeichert…", "cancel": "Abbrechen", "delete": "Löschen", "edit": "Bearbeiten", "tryAgain": "Erneut versuchen", "back": "Zurück", "close": "Schließen", "remove": "Entfernen", "loading": "Wird geladen…" },
+  "unsaved": "Du hast ungespeicherte Änderungen. Trotzdem verlassen?",
+  "errors": { "notFoundTitle": "Seite nicht gefunden", "notFoundBody": "Die gesuchte Seite existiert nicht oder wurde verschoben.", "goHome": "Zur Startseite", "genericTitle": "Etwas ist schiefgelaufen", "genericBody": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es erneut." }
+}

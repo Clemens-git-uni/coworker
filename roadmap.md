@@ -13,4 +13,4 @@
 - [x] Review edit: any field change unlocks Save (dirty check, validation message, leave warning)
 - [x] LinkedIn profile link (validated, public/private toggle, icon on profile + search cards)
 - [ ] LinkedIn account connect — skipped by user choice for now
-- [ ] Interface translations (EN/DE/FR/ES/IT) — next batch
+- [ ] Interface translations EN + DE (in progress); FR/ES/IT later

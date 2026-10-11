@@ -19,3 +19,5 @@
 - Work email codes are created via the service-role-only create_work_email_code RPC from a server function and verified via verify_work_email; why: plaintext codes never reach the browser.
 - Search uses search_profiles_v3 (older versions kept for compatibility); results order is stored in sessionStorage for profile previous/next, enabled by the ?nav=true flag.
 - profiles.linkedin_url is public and maintained only by a trigger from the owner-only profile_linkedin table (null when hidden); why: hidden links never leave the owner's row.
+- UI text lives in src/locales/<lang>/<namespace>.json loaded by src/lib/i18n.ts; SSR renders English and the stored/browser language is applied after hydration (localStorage + profiles.ui_language); why: no hydration mismatch, no reload on switch.
+- Shared enum labels in profile-meta.ts resolve through i18n at read time; why: one source for relationship/status/proficiency labels in every language.

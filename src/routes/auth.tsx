@@ -125,7 +125,7 @@ function AuthPage() {
                   i18nKey="confirmation.description"
                   t={t}
                   values={{ email }}
-                  components={[null, <span className="font-medium text-foreground" />]}
+                  components={{ 1: <span className="font-medium text-foreground" /> }}
                 />
               </CardDescription>
             </CardHeader>
